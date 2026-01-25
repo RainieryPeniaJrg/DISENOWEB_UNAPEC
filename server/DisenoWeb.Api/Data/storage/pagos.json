@@ -1,0 +1,10 @@
+[
+  {
+    "id": "c8e1f2a3-7b5c-4d1e-9f21-3c5d7e1f4101",
+    "metodoPago": "tarjeta",
+    "monto": 382.00,
+    "fechaPago": "2026-01-25T12:00:00Z",
+    "estado": "procesando",
+    "reservacionId": "b6d2c7e1-4f9a-4c1d-8e13-2b7c6d1f3101"
+  }
+]
