@@ -227,6 +227,27 @@ FakesAssemblies/
 # Node.js Tools for Visual Studio
 .ntvs_analysis.dat
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+dist/
+build/
+.turbo/
+.parcel-cache/
+.next/
+.svelte-kit/
+.nuxt/
+coverage/
+.env.local
+.env.*.local
+/.vite/
+/client/dist/
+/frontend-client/dist/
 
 # Visual Studio 6 build log
 *.plg
