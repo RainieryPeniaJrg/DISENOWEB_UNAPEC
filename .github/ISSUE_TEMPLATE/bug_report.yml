@@ -1,0 +1,26 @@
+name: Bug report
+description: Reportar un bug en API o Front
+labels: [bug]
+body:
+  - type: textarea
+    attributes:
+      label: Descripción
+      description: Qué sucede y qué esperabas que pasara
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Pasos para reproducir
+      value: "1. \n2. \n3. "
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Evidencia
+      description: Logs, capturas, requests
+  - type: input
+    attributes:
+      label: Versión/Commit
+      description: hash o tag
+    validations:
+      required: true
