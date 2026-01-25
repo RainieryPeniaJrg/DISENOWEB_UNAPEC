@@ -1,16 +1,29 @@
 [
   {
-    "id": "f2b7a1a1-3c4e-4b16-9c21-6d33c2c3c201",
-    "texto": "Lugar increíble para desconectar y hacer senderismo.",
-    "fecha": "2026-01-15T14:00:00Z",
-    "usuarioId": "8f0c3e0e-0f7a-4a3a-9d1e-3c2f4c5b7002",
-    "sitioId": "6c4a9f6a-02a4-4fcb-9d75-5f95f143a101"
+    "id": "77777777-7777-7777-7777-777777777777",
+    "texto": "La playa es tranquila y limpia, perfecto para familias.",
+    "fecha": "2026-01-20T10:00:00Z",
+    "usuarioId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+    "sitioId": "33333333-3333-3333-3333-333333333333",
+    "hotelId": null,
+    "parentComentarioId": null
   },
   {
-    "id": "a3c9d7e1-5f2b-4c0d-9e11-7a2b5c6d2f02",
-    "texto": "Vista espectacular del atardecer.",
-    "fecha": "2026-01-16T18:30:00Z",
-    "usuarioId": "8f0c3e0e-0f7a-4a3a-9d1e-3c2f4c5b7002",
-    "sitioId": "c9273c8e-7de1-4b8c-98ac-0e88c4f4a102"
+    "id": "88888888-8888-8888-8888-888888888888",
+    "texto": "Confirmo, además el atardecer es espectacular.",
+    "fecha": "2026-01-20T12:00:00Z",
+    "usuarioId": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+    "sitioId": "33333333-3333-3333-3333-333333333333",
+    "hotelId": null,
+    "parentComentarioId": "77777777-7777-7777-7777-777777777777"
+  },
+  {
+    "id": "99999999-9999-9999-9999-999999999999",
+    "texto": "Habitaciones amplias y desayuno variado.",
+    "fecha": "2026-01-21T09:30:00Z",
+    "usuarioId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "sitioId": null,
+    "hotelId": "55555555-5555-5555-5555-555555555555",
+    "parentComentarioId": null
   }
 ]

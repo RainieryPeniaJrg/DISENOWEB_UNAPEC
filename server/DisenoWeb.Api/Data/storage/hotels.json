@@ -1,18 +1,18 @@
 [
   {
-    "id": "b2c5f7b5-8b2c-4a0f-9a7d-8c1f9d3d1101",
-    "nombre": "Hotel VerdeLuz",
-    "direccion": "Carretera Principal km 12, Valle Verde",
-    "precioNoche": 95.50,
-    "sitioId": "6c4a9f6a-02a4-4fcb-9d75-5f95f143a101",
+    "id": "55555555-5555-5555-5555-555555555555",
+    "nombre": "Hotel Mar Azul",
+    "direccion": "Carretera Costera km 12, Samaná",
+    "precioNoche": 120.0,
+    "sitioId": "33333333-3333-3333-3333-333333333333",
     "activo": true
   },
   {
-    "id": "a4d0c9b1-6fd5-4b08-9e12-1f0c5f2a1102",
-    "nombre": "Hostal FaroMar",
-    "direccion": "Calle del Sol 45, Zona Colonial",
-    "precioNoche": 72.00,
-    "sitioId": "c9273c8e-7de1-4b8c-98ac-0e88c4f4a102",
+    "id": "66666666-6666-6666-6666-666666666666",
+    "nombre": "Eco Lodge Esmeralda",
+    "direccion": "Sendero Cascada, Constanza",
+    "precioNoche": 95.5,
+    "sitioId": "44444444-4444-4444-4444-444444444444",
     "activo": true
   }
 ]
