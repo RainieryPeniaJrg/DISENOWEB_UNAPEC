@@ -11,6 +11,8 @@ import {
   SitioTuristico,
   Valoracion,
   ValoracionStats,
+  User,
+  Reservacion,
 } from "../types";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL ?? "https://localhost:7057";
@@ -29,6 +31,9 @@ export const authApi = {
     const { data } = await api.post<AuthResponse>("/api/usuarios/login", { email, password });
     return data;
   },
+  updateProfile: async (user: User): Promise<void> => {
+    await api.put(`/api/usuarios/${user.id}`, user);
+  },
 };
 
 export const sitiosApi = {
@@ -38,6 +43,20 @@ export const sitiosApi = {
   },
   get: async (id: string): Promise<SitioConImagenes> => {
     const { data } = await api.get<SitioConImagenes>(`/api/sitiosturisticos/${id}`);
+    return data;
+  },
+};
+
+export const usuariosApi = {
+  get: async (id: string): Promise<User> => {
+    const { data } = await api.get(`/api/usuarios/${id}`);
+    return data.usuario ?? data; // soportar formato extendido
+  },
+};
+
+export const reservacionesApi = {
+  list: async (): Promise<Reservacion[]> => {
+    const { data } = await api.get("/api/reservaciones");
     return data;
   },
 };

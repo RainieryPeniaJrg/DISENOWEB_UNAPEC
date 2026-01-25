@@ -4,6 +4,7 @@ import { HomePage } from "./pages/HomePage";
 import { WipPage } from "./pages/WipPage";
 import { SitiosPage } from "./pages/SitiosPage";
 import { HotelesPage } from "./pages/HotelesPage";
+import { ProfilePage } from "./pages/ProfilePage";
 
 export default function App() {
   return (
@@ -15,7 +16,7 @@ export default function App() {
           <Route path="/hoteles" element={<HotelesPage />} />
           <Route path="/reservas" element={<WipPage title="Reservas" />} />
           <Route path="/pagos" element={<WipPage title="Pagos" />} />
-          <Route path="/perfil" element={<WipPage title="Perfil" />} />
+          <Route path="/perfil" element={<ProfilePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </LayoutShell>

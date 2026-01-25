@@ -126,4 +126,5 @@ export interface AuthResponse {
   roleId: string;
   createdAt: string;
   imagenes: Imagen[];
+  passwordHash?: string;
 }

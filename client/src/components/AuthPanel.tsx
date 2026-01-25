@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import { useAuth } from "../state/AuthContext";
+import { Icon } from "./Icon";
 
 export function AuthPanel() {
   const { user, login, register, logout, loading, error } = useAuth();
@@ -24,7 +25,7 @@ export function AuthPanel() {
         <h4>{user.name}</h4>
         <p className="muted small">{user.email}</p>
         <button className="btn ghost" onClick={logout}>
-          Cerrar sesión
+          <Icon name="logout" /> Cerrar sesión
         </button>
       </div>
     );

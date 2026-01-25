@@ -1,12 +1,13 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useState } from "react";
 import { useAuth } from "../state/AuthContext";
 import { AuthPanel } from "./AuthPanel";
+import { useTheme } from "../state/ThemeContext";
 
 const navItems = [
   { to: "/", label: "Inicio", badge: null },
-  { to: "/sitios", label: "Sitios", badge: "WIP" },
-  { to: "/hoteles", label: "Hoteles", badge: "WIP" },
+  { to: "/sitios", label: "Sitios", badge: null },
+  { to: "/hoteles", label: "Hoteles", badge: null },
   { to: "/reservas", label: "Reservas", badge: "WIP" },
   { to: "/pagos", label: "Pagos", badge: "WIP" },
   { to: "/perfil", label: "Perfil", badge: "WIP" },
@@ -15,6 +16,8 @@ const navItems = [
 export function LayoutShell({ children }: PropsWithChildren) {
   const { pathname } = useLocation();
   const { user } = useAuth();
+  const { theme, toggle } = useTheme();
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
     <div className="app-shell">
@@ -27,13 +30,19 @@ export function LayoutShell({ children }: PropsWithChildren) {
           </div>
         </div>
         <div className="top-links">
+          <button className="icon-btn" onClick={() => setSidebarOpen((s) => !s)} title="Toggle menú">
+            {sidebarOpen ? "☰" : "☷"}
+          </button>
+          <button className="icon-btn" onClick={toggle} title="Cambiar tema">
+            {theme === "dark" ? "🌙" : "☀️"}
+          </button>
           <span className="status-dot online" aria-label="API status" />
           <p className="muted">{user ? `Hola, ${user.name}` : "API conectada"}</p>
         </div>
       </header>
 
       <div className="layout">
-        <aside className="sidebar">
+        <aside className={`sidebar ${sidebarOpen ? "" : "collapsed"}`}>
           <nav>
             <p className="muted">Navegación</p>
             <ul>
@@ -61,11 +70,11 @@ export function LayoutShell({ children }: PropsWithChildren) {
       <footer className="footer">
         <div>© 2026 DisenoWeb · Demo front conectado a API JSON</div>
         <div className="footer-links">
-          <a href="https://localhost:7057/swagger" target="_blank" rel="noreferrer">
+          <a href="https://localhost:7057/swagger" target="_blank" rel="">
             Swagger
           </a>
           <span aria-hidden>•</span>
-          <a href="https://localhost:7057/api" target="_blank" rel="noreferrer">
+          <a href="https://localhost:7057/api" target="_blank" rel="">
             API base
           </a>
         </div>
