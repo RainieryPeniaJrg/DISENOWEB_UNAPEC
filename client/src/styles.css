@@ -151,6 +151,32 @@ a {
   padding: 24px 32px 48px;
 }
 
+.btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, var(--primary), #5ae0d1);
+  border: none;
+  color: #0c1021;
+  font-weight: 700;
+}
+
+.btn.ghost {
+  border: 1px solid var(--border);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .footer {
   display: flex;
   justify-content: space-between;
@@ -350,6 +376,47 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.auth-panel {
+  margin-top: 20px;
+  display: grid;
+  gap: 10px;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.tabs button {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.tabs button.active {
+  border-color: rgba(70, 194, 179, 0.6);
+  background: rgba(70, 194, 179, 0.12);
+}
+
+.quick-comment textarea,
+.auth-panel input,
+.auth-panel textarea {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  padding: 10px;
+}
+
+.error-text {
+  color: #ff9f9f;
 }
 
 .footer a:hover {

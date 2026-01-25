@@ -29,6 +29,27 @@ export interface Hotel {
   activo: boolean;
 }
 
+export interface Imagen {
+  id: string;
+  url: string;
+  fileName: string;
+  descripcion: string;
+  esPrincipal: boolean;
+  sitioId?: string | null;
+  hotelId?: string | null;
+  usuarioId?: string | null;
+}
+
+export interface SitioConImagenes {
+  sitio: SitioTuristico;
+  imagenes: Imagen[];
+}
+
+export interface HotelConImagenes {
+  hotel: Hotel;
+  imagenes: Imagen[];
+}
+
 export interface Comentario {
   id: string;
   texto: string;
@@ -69,16 +90,6 @@ export interface ReaccionStats {
   promedioMeGusta: number;
 }
 
-export interface Imagen {
-  id: string;
-  url: string;
-  descripcion: string;
-  esPrincipal: boolean;
-  sitioId?: string | null;
-  hotelId?: string | null;
-  usuarioId?: string | null;
-}
-
 export interface Reservacion {
   id: string;
   fechaInicio: string;
@@ -104,4 +115,15 @@ export interface Product {
   description?: string;
   price: number;
   createdAt: string;
+}
+
+export interface AuthResponse {
+  message: string;
+  accedido: boolean;
+  userId: string;
+  name: string;
+  email: string;
+  roleId: string;
+  createdAt: string;
+  imagenes: Imagen[];
 }

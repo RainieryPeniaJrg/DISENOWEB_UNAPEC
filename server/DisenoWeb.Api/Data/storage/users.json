@@ -22,5 +22,13 @@
     "passwordHash": "marco123",
     "roleId": "22222222-2222-2222-2222-222222222222",
     "createdAt": "2026-01-06T09:00:00Z"
+  },
+  {
+    "id": "c935f55e-87e0-492f-aace-5b567a774932",
+    "name": "Prueba",
+    "email": "prueba@mail.com",
+    "passwordHash": "1234",
+    "roleId": "22222222-2222-2222-2222-222222222222",
+    "createdAt": "2026-01-25T17:46:59.508175Z"
   }
 ]

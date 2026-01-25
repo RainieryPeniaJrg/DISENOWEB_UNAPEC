@@ -1,10 +1,13 @@
 import axios from "axios";
 import {
+  AuthResponse,
   Comentario,
   Hotel,
+  HotelConImagenes,
   Imagen,
   Reaccion,
   ReaccionStats,
+  SitioConImagenes,
   SitioTuristico,
   Valoracion,
   ValoracionStats,
@@ -17,23 +20,35 @@ export const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-export const healthApi = {
-  ping: async () => {
-    const { data } = await api.get("/");
+export const authApi = {
+  register: async (name: string, email: string, password: string): Promise<AuthResponse> => {
+    const { data } = await api.post<AuthResponse>("/api/usuarios/register", { name, email, password });
+    return data;
+  },
+  login: async (email: string, password: string): Promise<AuthResponse> => {
+    const { data } = await api.post<AuthResponse>("/api/usuarios/login", { email, password });
     return data;
   },
 };
 
 export const sitiosApi = {
-  list: async (): Promise<SitioTuristico[]> => {
-    const { data } = await api.get("/api/sitiosturisticos");
+  list: async (): Promise<SitioConImagenes[]> => {
+    const { data } = await api.get<SitioConImagenes[]>("/api/sitiosturisticos");
+    return data;
+  },
+  get: async (id: string): Promise<SitioConImagenes> => {
+    const { data } = await api.get<SitioConImagenes>(`/api/sitiosturisticos/${id}`);
     return data;
   },
 };
 
 export const hotelesApi = {
-  list: async (): Promise<Hotel[]> => {
-    const { data } = await api.get("/api/hoteles");
+  list: async (): Promise<HotelConImagenes[]> => {
+    const { data } = await api.get<HotelConImagenes[]>("/api/hoteles");
+    return data;
+  },
+  get: async (id: string): Promise<HotelConImagenes> => {
+    const { data } = await api.get<HotelConImagenes>(`/api/hoteles/${id}`);
     return data;
   },
 };
@@ -74,10 +89,6 @@ export const valoracionesApi = {
     const { data } = await api.get(`/api/valoraciones/hotel/${hotelId}/estadisticas`);
     return data;
   },
-  create: async (payload: Omit<Valoracion, "id" | "fecha">) => {
-    const { data } = await api.post("/api/valoraciones", payload);
-    return data as Valoracion;
-  },
 };
 
 export const reaccionesApi = {
@@ -96,10 +107,6 @@ export const reaccionesApi = {
   statsHotel: async (hotelId: string): Promise<ReaccionStats> => {
     const { data } = await api.get(`/api/reacciones/hotel/${hotelId}/estadisticas`);
     return data;
-  },
-  create: async (payload: Omit<Reaccion, "id" | "fecha">) => {
-    const { data } = await api.post("/api/reacciones", payload);
-    return data as Reaccion;
   },
 };
 

@@ -1,5 +1,7 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { PropsWithChildren } from "react";
+import { useAuth } from "../state/AuthContext";
+import { AuthPanel } from "./AuthPanel";
 
 const navItems = [
   { to: "/", label: "Inicio", badge: null },
@@ -12,6 +14,7 @@ const navItems = [
 
 export function LayoutShell({ children }: PropsWithChildren) {
   const { pathname } = useLocation();
+  const { user } = useAuth();
 
   return (
     <div className="app-shell">
@@ -25,7 +28,7 @@ export function LayoutShell({ children }: PropsWithChildren) {
         </div>
         <div className="top-links">
           <span className="status-dot online" aria-label="API status" />
-          <p className="muted">API conectada</p>
+          <p className="muted">{user ? `Hola, ${user.name}` : "API conectada"}</p>
         </div>
       </header>
 
@@ -49,6 +52,7 @@ export function LayoutShell({ children }: PropsWithChildren) {
             <p className="muted">{pathname}</p>
             <p className="small">Usa el menú para explorar. Las vistas marcadas como WIP muestran placeholder listo para integrar.</p>
           </div>
+          <AuthPanel />
         </aside>
 
         <main className="main">{children}</main>

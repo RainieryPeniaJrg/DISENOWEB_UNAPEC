@@ -1,17 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  comentariosApi,
-  hotelesApi,
-  imagenesApi,
-  reaccionesApi,
-  sitiosApi,
-  valoracionesApi,
-} from "../services/api";
+import { comentariosApi, hotelesApi, reaccionesApi, sitiosApi, valoracionesApi } from "../services/api";
 import {
   Comentario,
-  Hotel,
-  Imagen,
-  SitioTuristico,
+  HotelConImagenes,
+  SitioConImagenes,
   ValoracionStats,
   ReaccionStats,
 } from "../types";
@@ -19,24 +11,27 @@ import { StatCard } from "../components/StatCard";
 import { WipBanner } from "../components/WipBanner";
 import { Hero } from "../components/Hero";
 import { ImageStrip } from "../components/ImageStrip";
+import { useAuth } from "../state/AuthContext";
+import { QuickComment } from "../components/QuickComment";
 
 type SitioView = {
-  sitio: SitioTuristico;
+  sitio: SitioConImagenes["sitio"];
+  imagenes: SitioConImagenes["imagenes"];
   valoraciones: ValoracionStats;
   reacciones: ReaccionStats;
   comentarios: Comentario[];
-  imagenes: Imagen[];
 };
 
 type HotelView = {
-  hotel: Hotel;
+  hotel: HotelConImagenes["hotel"];
+  imagenes: HotelConImagenes["imagenes"];
   valoraciones: ValoracionStats;
   reacciones: ReaccionStats;
   comentarios: Comentario[];
-  imagenes: Imagen[];
 };
 
 export function HomePage() {
+  const { user } = useAuth();
   const [sitios, setSitios] = useState<SitioView[]>([]);
   const [hoteles, setHoteles] = useState<HotelView[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,26 +44,24 @@ export function HomePage() {
         const [sitiosData, hotelesData] = await Promise.all([sitiosApi.list(), hotelesApi.list()]);
 
         const sitiosEnriquecidos = await Promise.all(
-          sitiosData.map(async (s) => {
-            const [val, reac, com, imgs] = await Promise.all([
-              valoracionesApi.statsSitio(s.id),
-              reaccionesApi.statsSitio(s.id),
-              comentariosApi.listBySitio(s.id),
-              imagenesApi.listSitio(s.id),
+          sitiosData.map(async ({ sitio, imagenes }) => {
+            const [val, reac, com] = await Promise.all([
+              valoracionesApi.statsSitio(sitio.id),
+              reaccionesApi.statsSitio(sitio.id),
+              comentariosApi.listBySitio(sitio.id),
             ]);
-            return { sitio: s, valoraciones: val, reacciones: reac, comentarios: com, imagenes: imgs };
+            return { sitio, imagenes, valoraciones: val, reacciones: reac, comentarios: com };
           })
         );
 
         const hotelesEnriquecidos = await Promise.all(
-          hotelesData.map(async (h) => {
-            const [val, reac, com, imgs] = await Promise.all([
-              valoracionesApi.statsHotel(h.id),
-              reaccionesApi.statsHotel(h.id),
-              comentariosApi.listByHotel(h.id),
-              imagenesApi.listHotel(h.id),
+          hotelesData.map(async ({ hotel, imagenes }) => {
+            const [val, reac, com] = await Promise.all([
+              valoracionesApi.statsHotel(hotel.id),
+              reaccionesApi.statsHotel(hotel.id),
+              comentariosApi.listByHotel(hotel.id),
             ]);
-            return { hotel: h, valoraciones: val, reacciones: reac, comentarios: com, imagenes: imgs };
+            return { hotel, imagenes, valoraciones: val, reacciones: reac, comentarios: com };
           })
         );
 
@@ -129,6 +122,17 @@ export function HomePage() {
                   </div>
                   <ImageStrip images={item.imagenes} />
                   <MiniComments comentarios={item.comentarios} />
+                  {user && (
+                    <QuickComment
+                      usuarioId={user.userId}
+                      sitioId={item.sitio.id}
+                      onCreated={(c) =>
+                        setSitios((prev) =>
+                          prev.map((s) => (s.sitio.id === item.sitio.id ? { ...s, comentarios: [c, ...s.comentarios] } : s))
+                        )
+                      }
+                    />
+                  )}
                 </article>
               ))}
             </div>
@@ -137,7 +141,7 @@ export function HomePage() {
           <section className="stack-md">
             <div className="section-head">
               <h3>Hoteles</h3>
-              <p className="muted">Próximas vistas de reserva y pago quedan WIP.</p>
+              <p className="muted">Reservas y pagos siguen como WIP.</p>
             </div>
             <div className="grid-2">
               {hoteles.map((item) => (
@@ -161,6 +165,17 @@ export function HomePage() {
                   </div>
                   <ImageStrip images={item.imagenes} />
                   <MiniComments comentarios={item.comentarios} />
+                  {user && (
+                    <QuickComment
+                      usuarioId={user.userId}
+                      hotelId={item.hotel.id}
+                      onCreated={(c) =>
+                        setHoteles((prev) =>
+                          prev.map((h) => (h.hotel.id === item.hotel.id ? { ...h, comentarios: [c, ...h.comentarios] } : h))
+                        )
+                      }
+                    />
+                  )}
                 </article>
               ))}
             </div>
