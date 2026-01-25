@@ -6,82 +6,82 @@ namespace DisenoWeb.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ValoracionesController(
-    IRepository<Valoracion> repo,
+public class ReaccionesController(
+    IRepository<Reaccion> repo,
     IRepository<User> usuariosRepo,
     IRepository<SitioTuristico> sitiosRepo,
     IRepository<Hotel> hotelesRepo) : ControllerBase
 {
-    private readonly IRepository<Valoracion> _repo = repo;
+    private readonly IRepository<Reaccion> _repo = repo;
     private readonly IRepository<User> _usuariosRepo = usuariosRepo;
     private readonly IRepository<SitioTuristico> _sitiosRepo = sitiosRepo;
     private readonly IRepository<Hotel> _hotelesRepo = hotelesRepo;
 
     [HttpGet]
-    public async Task<IEnumerable<Valoracion>> GetAll() => await _repo.GetAllAsync();
+    public async Task<IEnumerable<Reaccion>> GetAll() => await _repo.GetAllAsync();
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<Valoracion>> Get(Guid id)
+    public async Task<ActionResult<Reaccion>> Get(Guid id)
     {
         var item = await _repo.GetByIdAsync(id);
         return item is null ? NotFound() : Ok(item);
     }
 
     [HttpGet("sitio/{sitioId:guid}")]
-    public async Task<ActionResult<IEnumerable<Valoracion>>> GetBySitio(Guid sitioId)
+    public async Task<ActionResult<IEnumerable<Reaccion>>> GetBySitio(Guid sitioId)
     {
         if (!await SitioExists(sitioId)) return NotFound("Sitio turístico no existe");
-        var valoraciones = (await _repo.GetAllAsync())
-            .Where(v => v.SitioId == sitioId)
-            .OrderByDescending(v => v.Fecha);
-        return Ok(valoraciones);
+        var reacciones = (await _repo.GetAllAsync())
+            .Where(r => r.SitioId == sitioId)
+            .OrderByDescending(r => r.Fecha);
+        return Ok(reacciones);
     }
 
     [HttpGet("hotel/{hotelId:guid}")]
-    public async Task<ActionResult<IEnumerable<Valoracion>>> GetByHotel(Guid hotelId)
+    public async Task<ActionResult<IEnumerable<Reaccion>>> GetByHotel(Guid hotelId)
     {
         if (!await HotelExists(hotelId)) return NotFound("Hotel no existe");
-        var valoraciones = (await _repo.GetAllAsync())
-            .Where(v => v.HotelId == hotelId)
-            .OrderByDescending(v => v.Fecha);
-        return Ok(valoraciones);
+        var reacciones = (await _repo.GetAllAsync())
+            .Where(r => r.HotelId == hotelId)
+            .OrderByDescending(r => r.Fecha);
+        return Ok(reacciones);
     }
 
     [HttpGet("sitio/{sitioId:guid}/estadisticas")]
-    public async Task<ActionResult<EstadisticasValoracion>> GetEstadisticasSitio(Guid sitioId)
+    public async Task<ActionResult<EstadisticasReaccion>> GetEstadisticasSitio(Guid sitioId)
     {
         if (!await SitioExists(sitioId)) return NotFound("Sitio turístico no existe");
-        var stats = CalcularEstadisticas((await _repo.GetAllAsync()).Where(v => v.SitioId == sitioId));
+        var stats = CalcularEstadisticas((await _repo.GetAllAsync()).Where(r => r.SitioId == sitioId));
         return Ok(stats);
     }
 
     [HttpGet("hotel/{hotelId:guid}/estadisticas")]
-    public async Task<ActionResult<EstadisticasValoracion>> GetEstadisticasHotel(Guid hotelId)
+    public async Task<ActionResult<EstadisticasReaccion>> GetEstadisticasHotel(Guid hotelId)
     {
         if (!await HotelExists(hotelId)) return NotFound("Hotel no existe");
-        var stats = CalcularEstadisticas((await _repo.GetAllAsync()).Where(v => v.HotelId == hotelId));
+        var stats = CalcularEstadisticas((await _repo.GetAllAsync()).Where(r => r.HotelId == hotelId));
         return Ok(stats);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Valoracion>> Create(Valoracion valoracion)
+    public async Task<ActionResult<Reaccion>> Create(Reaccion reaccion)
     {
-        var validation = await ValidateValoracionAsync(valoracion, valoracion.Id);
+        var validation = await ValidateReaccionAsync(reaccion, reaccion.Id);
         if (validation is not null) return validation;
 
-        var created = await _repo.AddAsync(valoracion);
+        var created = await _repo.AddAsync(reaccion);
         return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, Valoracion valoracion)
+    public async Task<IActionResult> Update(Guid id, Reaccion reaccion)
     {
-        if (id != valoracion.Id) return BadRequest();
+        if (id != reaccion.Id) return BadRequest();
 
-        var validation = await ValidateValoracionAsync(valoracion, id);
+        var validation = await ValidateReaccionAsync(reaccion, id);
         if (validation is not null) return validation;
 
-        var ok = await _repo.UpdateAsync(valoracion);
+        var ok = await _repo.UpdateAsync(reaccion);
         return ok ? NoContent() : NotFound();
     }
 
@@ -92,34 +92,31 @@ public class ValoracionesController(
         return ok ? NoContent() : NotFound();
     }
 
-    private async Task<ActionResult?> ValidateValoracionAsync(Valoracion valoracion, Guid currentId)
+    private async Task<ActionResult?> ValidateReaccionAsync(Reaccion reaccion, Guid currentId)
     {
-        if (valoracion.Puntuacion is < 1 or > 5)
-        {
-            return BadRequest("Puntuación debe estar entre 1 y 5");
-        }
-
-        if (valoracion.UsuarioId == Guid.Empty || !await UsuarioExists(valoracion.UsuarioId))
+        if (reaccion.UsuarioId == Guid.Empty || !await UsuarioExists(reaccion.UsuarioId))
         {
             return BadRequest("Usuario inválido");
         }
 
-        var destinoValido = await DestinoValidoAsync(valoracion.SitioId, valoracion.HotelId);
+        var destinoValido = await DestinoValidoAsync(reaccion.SitioId, reaccion.HotelId);
         if (destinoValido is not null) return destinoValido;
 
         var duplicada = (await _repo.GetAllAsync())
-            .Any(v => v.Id != currentId && v.UsuarioId == valoracion.UsuarioId && v.SitioId == valoracion.SitioId && v.HotelId == valoracion.HotelId);
-        if (duplicada) return Conflict("El usuario ya valoró este destino");
+            .Any(r => r.Id != currentId && r.UsuarioId == reaccion.UsuarioId && r.SitioId == reaccion.SitioId && r.HotelId == reaccion.HotelId);
+        if (duplicada) return Conflict("El usuario ya reaccionó a este destino");
 
         return null;
     }
 
-    private EstadisticasValoracion CalcularEstadisticas(IEnumerable<Valoracion> valoraciones)
+    private EstadisticasReaccion CalcularEstadisticas(IEnumerable<Reaccion> reacciones)
     {
-        var lista = valoraciones.ToList();
-        var total = lista.Count;
-        var promedio = total == 0 ? 0 : Math.Round(lista.Average(v => v.Puntuacion), 2);
-        return new EstadisticasValoracion(total, promedio);
+        var lista = reacciones.ToList();
+        var likes = lista.Count(r => r.MeGusta);
+        var dislikes = lista.Count - likes;
+        var promedioMeGusta = lista.Count == 0 ? 0 : Math.Round((double)likes / lista.Count, 2);
+
+        return new EstadisticasReaccion(lista.Count, likes, dislikes, promedioMeGusta);
     }
 
     private async Task<ActionResult?> DestinoValidoAsync(Guid? sitioId, Guid? hotelId)
@@ -149,5 +146,5 @@ public class ValoracionesController(
     private async Task<bool> SitioExists(Guid id) => (await _sitiosRepo.GetByIdAsync(id)) is not null;
     private async Task<bool> HotelExists(Guid id) => (await _hotelesRepo.GetByIdAsync(id)) is not null;
 
-    public record EstadisticasValoracion(int Total, double Promedio);
+    public record EstadisticasReaccion(int Total, int Likes, int Dislikes, double PromedioMeGusta);
 }

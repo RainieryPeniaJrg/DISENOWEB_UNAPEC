@@ -6,5 +6,6 @@ public class Valoracion : IEntity
     public int Puntuacion { get; set; }
     public DateTime Fecha { get; set; } = DateTime.UtcNow;
     public Guid UsuarioId { get; set; }
-    public Guid SitioId { get; set; }
+    public Guid? SitioId { get; set; }
+    public Guid? HotelId { get; set; }
 }
