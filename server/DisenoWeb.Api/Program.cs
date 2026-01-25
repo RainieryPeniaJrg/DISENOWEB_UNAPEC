@@ -11,12 +11,18 @@ builder.Services.PostConfigure<JsonStorageOptions>(opts =>
 });
 builder.Services.AddSingleton(typeof(IRepository<>), typeof(JsonFileRepository<>));
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:3000")
+        policy.WithOrigins(
+                  "http://localhost:5173",
+                  "https://localhost:5173",
+                  "http://localhost:3000",
+                  "https://localhost:3000")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -30,6 +36,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
+    app.UseSwaggerUI();
     app.MapOpenApi();
 }
 
@@ -37,5 +45,13 @@ app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
 app.UseAuthorization();
 app.MapControllers();
+
+// Ruta basica para verificar vida del servicio
+app.MapGet("/", () => Results.Ok(new
+{
+    message = "DisenoWeb API corriendo",
+    version = "v1",
+    endpoints = "/api/*"
+}));
 
 app.Run();

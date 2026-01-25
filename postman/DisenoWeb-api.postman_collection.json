@@ -1,0 +1,40 @@
+{
+  "info": {
+    "_postman_id": "d2b92b86-3d6a-4f6f-b1f4-30d7c7a8c001",
+    "name": "DisenoWeb API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Coleccion para probar la API JSON de DisenoWeb"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/", "host": ["{{baseUrl}}"], "path": [""] }
+      }
+    },
+    {
+      "name": "Roles",
+      "item": [
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/api/roles" } },
+        { "name": "Create", "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\n  \"name\": \"ADMIN\"\n}" }, "url": "{{baseUrl}}/api/roles" } }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/api/usuarios" } },
+        { "name": "Create", "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Nuevo Usuario\",\n  \"email\": \"nuevo@example.com\",\n  \"passwordHash\": \"hash\",\n  \"roleId\": ""\n}" }, "url": "{{baseUrl}}/api/usuarios" } }
+      ]
+    },
+    { "name": "Sitios", "request": { "method": "GET", "url": "{{baseUrl}}/api/sitiosturisticos" } },
+    { "name": "Hoteles", "request": { "method": "GET", "url": "{{baseUrl}}/api/hoteles" } },
+    { "name": "Comentarios", "request": { "method": "GET", "url": "{{baseUrl}}/api/comentarios" } },
+    { "name": "Valoraciones", "request": { "method": "GET", "url": "{{baseUrl}}/api/valoraciones" } },
+    { "name": "Reservaciones", "request": { "method": "GET", "url": "{{baseUrl}}/api/reservaciones" } },
+    { "name": "Pagos", "request": { "method": "GET", "url": "{{baseUrl}}/api/pagos" } }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "https://localhost:7057" }
+  ]
+}
