@@ -17,3 +17,14 @@ Para hotfix:
 - Crear branch `hotfix/<nombre>` desde `main`, abrir PR hacia `main` y pasar CI.
 
 Activa "Automatically delete head branches" en Settings > General para limpiar ramas después de merge.
+
+## Automatizar con GitHub CLI
+Usa `scripts/set-branch-protection.ps1` para aplicar la regla sin entrar a la UI.
+```powershell
+$env:GH_TOKEN = "<token_con_permisos_repo>"
+./scripts/set-branch-protection.ps1 -Repo "owner/nombre-repo"
+```
+El script configura:
+- PR obligatorio y aprobaciones (1), invalida approvals con nuevos commits.
+- Checks requeridos: `backend (.NET API)` y `frontend (Vite React)`.
+- Estrictos: branch up-to-date, sin force push, admin incluido, lineal history, resolver conversaciones.
