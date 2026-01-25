@@ -1,0 +1,16 @@
+[
+  {
+    "id": "6c4a9f6a-02a4-4fcb-9d75-5f95f143a101",
+    "nombre": "Cascada Esmeralda",
+    "descripcion": "Sendero ecoturístico con cascadas y pozas naturales.",
+    "ubicacion": "Valle Verde, RD",
+    "activo": true
+  },
+  {
+    "id": "c9273c8e-7de1-4b8c-98ac-0e88c4f4a102",
+    "nombre": "Faro Colonial",
+    "descripcion": "Monumento histórico y mirador al mar.",
+    "ubicacion": "Zona Colonial, RD",
+    "activo": true
+  }
+]

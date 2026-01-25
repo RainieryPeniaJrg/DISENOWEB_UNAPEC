@@ -1,0 +1,16 @@
+[
+  {
+    "Id": "a7a20d7b-9eb9-4d19-a2a2-1a6f73632de8",
+    "Name": "Cuaderno rayado",
+    "Description": "Cuaderno universitario 100 hojas",
+    "Price": 3.50,
+    "CreatedAt": "2026-01-20T15:00:00Z"
+  },
+  {
+    "Id": "5b64b9f0-20e3-4c3d-9ec5-420a3fab0e9e",
+    "Name": "Boligrafo azul",
+    "Description": "Tinta de secado rapido",
+    "Price": 1.10,
+    "CreatedAt": "2026-01-21T12:00:00Z"
+  }
+]

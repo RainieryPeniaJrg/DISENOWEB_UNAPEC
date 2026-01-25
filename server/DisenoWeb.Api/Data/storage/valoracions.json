@@ -1,0 +1,16 @@
+[
+  {
+    "id": "d1c4f6b1-9f2e-4a0d-b5f1-2a0c5d7e3c01",
+    "puntuacion": 5,
+    "fecha": "2026-01-15T14:05:00Z",
+    "usuarioId": "8f0c3e0e-0f7a-4a3a-9d1e-3c2f4c5b7002",
+    "sitioId": "6c4a9f6a-02a4-4fcb-9d75-5f95f143a101"
+  },
+  {
+    "id": "e2a7b5c3-4d2f-4e1b-9c12-7a3b5c6d2f02",
+    "puntuacion": 4,
+    "fecha": "2026-01-16T18:35:00Z",
+    "usuarioId": "8f0c3e0e-0f7a-4a3a-9d1e-3c2f4c5b7002",
+    "sitioId": "c9273c8e-7de1-4b8c-98ac-0e88c4f4a102"
+  }
+]

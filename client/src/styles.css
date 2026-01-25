@@ -1,0 +1,124 @@
+:root {
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  color: #0b1c2c;
+  background-color: #f6f8fb;
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-shell {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+header h1 {
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.panel {
+  background: #ffffff;
+  border: 1px solid #e1e7ef;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 16px 50px rgba(13, 32, 60, 0.06);
+}
+
+.button {
+  background: linear-gradient(120deg, #0072ff, #00c6ff);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(0, 114, 255, 0.25);
+}
+
+.input-row {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.input-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-weight: 600;
+}
+
+.input-row input,
+.input-row textarea {
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid #c8d4e3;
+  background: #f9fbff;
+  font-size: 0.95rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.65rem 0.35rem;
+  border-bottom: 1px solid #eef2f7;
+  text-align: left;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: #e8f3ff;
+  color: #0b69d4;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.actions button {
+  border: none;
+  border-radius: 10px;
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  background: #edf2f7;
+}
+
+.actions button.danger {
+  background: #ffecec;
+  color: #c53030;
+}
+
+@media (min-width: 768px) {
+  .two-col {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 1.25rem;
+  }
+}
