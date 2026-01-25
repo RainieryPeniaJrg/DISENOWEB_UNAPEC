@@ -22,7 +22,25 @@
     {
       "name": "Usuarios",
       "item": [
-        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/api/usuarios" } }
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/api/usuarios" } },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Nuevo Usuario\",\n  \"email\": \"nuevo@example.com\",\n  \"password\": \"clave123\"\n}" },
+            "url": "{{baseUrl}}/api/usuarios/register"
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"julia@demo.local\",\n  \"password\": \"julia123\"\n}" },
+            "url": "{{baseUrl}}/api/usuarios/login"
+          }
+        }
       ]
     },
     {
@@ -172,6 +190,37 @@
               "raw": "{\n  \"meGusta\": false,\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"hotelId\": \"{{hotelId}}\"\n}"
             },
             "url": "{{baseUrl}}/api/reacciones"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Imagenes",
+      "item": [
+        {
+          "name": "Listar imágenes sitio",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/imagenes/sitio/{{sitioId}}" }
+        },
+        {
+          "name": "Listar imágenes hotel",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/imagenes/hotel/{{hotelId}}" }
+        },
+        {
+          "name": "Listar imágenes usuario",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/imagenes/usuario/{{usuarioId}}" }
+        },
+        {
+          "name": "Crear imagen sitio",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "multipart/form-data" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "files", "type": "file", "src": "" }
+              ]
+            },
+            "url": "{{baseUrl}}/api/imagenes/sitio/{{sitioId}}"
           }
         }
       ]

@@ -10,6 +10,7 @@ public class UsuariosController(IRepository<User> repo, IRepository<Role> rolesR
 {
     private readonly IRepository<User> _repo = repo;
     private readonly IRepository<Role> _rolesRepo = rolesRepo;
+    private const string RolUsuarioNombre = "USER";
 
     [HttpGet]
     public async Task<IEnumerable<User>> GetAll() => await _repo.GetAllAsync();
@@ -21,12 +22,37 @@ public class UsuariosController(IRepository<User> repo, IRepository<Role> rolesR
         return item is null ? NotFound() : Ok(item);
     }
 
-    [HttpPost]
-    public async Task<ActionResult<User>> Create(User user)
+    [HttpPost("register")]
+    public async Task<ActionResult<AuthResponse>> Register(RegisterRequest request)
     {
-        if (!await RoleExists(user.RoleId)) return BadRequest("Role no existe");
+        var (roleId, roleError) = await GetUserRoleIdAsync();
+        if (roleError is not null) return roleError;
+
+        var existing = (await _repo.GetAllAsync()).FirstOrDefault(u => u.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase));
+        if (existing is not null) return Conflict("El correo ya está registrado");
+
+        var user = new User
+        {
+            Name = request.Name,
+            Email = request.Email,
+            PasswordHash = request.Password, // plaintext según requerimiento
+            RoleId = roleId!.Value,
+            CreatedAt = DateTime.UtcNow
+        };
+
         var created = await _repo.AddAsync(user);
-        return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
+        return CreatedAtAction(nameof(Get), new { id = created.Id }, ToAuthResponse(created));
+    }
+
+    [HttpPost("login")]
+    public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
+    {
+        var user = (await _repo.GetAllAsync()).FirstOrDefault(u => u.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase));
+        if (user is null) return Unauthorized("Credenciales inválidas");
+        if (!string.Equals(user.PasswordHash, request.Password, StringComparison.Ordinal))
+            return Unauthorized("Credenciales inválidas");
+
+        return Ok(ToAuthResponse(user));
     }
 
     [HttpPut("{id:guid}")]
@@ -46,4 +72,19 @@ public class UsuariosController(IRepository<User> repo, IRepository<Role> rolesR
     }
 
     private async Task<bool> RoleExists(Guid roleId) => (await _rolesRepo.GetByIdAsync(roleId)) is not null;
+
+    private async Task<(Guid? roleId, ActionResult? error)> GetUserRoleIdAsync()
+    {
+        var roles = await _rolesRepo.GetAllAsync();
+        var role = roles.FirstOrDefault(r => r.Name.Equals(RolUsuarioNombre, StringComparison.OrdinalIgnoreCase));
+        if (role is null) return (null, BadRequest("Role USER no está configurado"));
+        return (role.Id, null);
+    }
+
+    private static AuthResponse ToAuthResponse(User user) =>
+        new(user.Id, user.Name, user.Email, user.RoleId, user.CreatedAt);
+
+    public record RegisterRequest(string Name, string Email, string Password);
+    public record LoginRequest(string Email, string Password);
+    public record AuthResponse(Guid UserId, string Name, string Email, Guid RoleId, DateTime CreatedAt);
 }
