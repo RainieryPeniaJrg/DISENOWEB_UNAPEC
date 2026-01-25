@@ -6,25 +6,33 @@ namespace DisenoWeb.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SitiosTuristicosController(IRepository<SitioTuristico> repo) : ControllerBase
+public class SitiosTuristicosController(IRepository<SitioTuristico> repo, IRepository<Imagen> imagenesRepo) : ControllerBase
 {
     private readonly IRepository<SitioTuristico> _repo = repo;
+    private readonly IRepository<Imagen> _imagenesRepo = imagenesRepo;
 
     [HttpGet]
-    public async Task<IEnumerable<SitioTuristico>> GetAll() => await _repo.GetAllAsync();
+    public async Task<IEnumerable<SitioConImagenes>> GetAll()
+    {
+        var sitios = await _repo.GetAllAsync();
+        var imgs = await _imagenesRepo.GetAllAsync();
+        return sitios.Select(s => new SitioConImagenes(s, imgs.Where(i => i.SitioId == s.Id)));
+    }
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<SitioTuristico>> Get(Guid id)
+    public async Task<ActionResult<SitioConImagenes>> Get(Guid id)
     {
         var item = await _repo.GetByIdAsync(id);
-        return item is null ? NotFound() : Ok(item);
+        if (item is null) return NotFound();
+        var imgs = (await _imagenesRepo.GetAllAsync()).Where(i => i.SitioId == id);
+        return Ok(new SitioConImagenes(item, imgs));
     }
 
     [HttpPost]
-    public async Task<ActionResult<SitioTuristico>> Create(SitioTuristico sitio)
+    public async Task<ActionResult<SitioConImagenes>> Create(SitioTuristico sitio)
     {
         var created = await _repo.AddAsync(sitio);
-        return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
+        return CreatedAtAction(nameof(Get), new { id = created.Id }, new SitioConImagenes(created, Enumerable.Empty<Imagen>()));
     }
 
     [HttpPut("{id:guid}")]
@@ -41,4 +49,6 @@ public class SitiosTuristicosController(IRepository<SitioTuristico> repo) : Cont
         var ok = await _repo.DeleteAsync(id);
         return ok ? NoContent() : NotFound();
     }
+
+    public record SitioConImagenes(SitioTuristico Sitio, IEnumerable<Imagen> Imagenes);
 }
