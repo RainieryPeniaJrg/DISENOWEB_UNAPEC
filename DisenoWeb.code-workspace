@@ -9,8 +9,8 @@
       "path": "server/DisenoWeb.Api"
     },
     {
-      "name": "frontend-client",
-      "path": "client"
+      "name": "frontend-angular",
+      "path": "client-angular"
     }
   ],
   "settings": {
@@ -27,13 +27,7 @@
       "**/obj": true
     },
     "editor.formatOnSave": true,
-    "eslint.workingDirectories": [
-      {
-        "directory": "client",
-        "changeProcessCWD": true
-      }
-    ],
-    "typescript.tsdk": "client/node_modules/typescript/lib",
+    "typescript.tsdk": "client-angular/node_modules/typescript/lib",
     "files.trimTrailingWhitespace": true
   }
 }
