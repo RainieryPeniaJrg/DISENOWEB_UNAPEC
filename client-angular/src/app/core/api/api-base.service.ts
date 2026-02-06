@@ -1,0 +1,11 @@
+import { Injectable } from "@angular/core";
+import { environment } from "../../../environments/environment";
+
+@Injectable({ providedIn: "root" })
+export class ApiBaseService {
+  readonly baseUrl = environment.apiBaseUrl;
+
+  api(path: string): string {
+    return `${this.baseUrl}/api/${path}`;
+  }
+}
