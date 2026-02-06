@@ -1,0 +1,371 @@
+{
+  "info": {
+    "_postman_id": "d2b92b86-3d6a-4f6f-b1f4-30d7c7a8c001",
+    "name": "DisenoWeb API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Colección completa para DisenoWeb (usuarios, sitios, hoteles, comentarios, valoraciones, reacciones, imágenes, reservaciones, pagos, productos, roles)."
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/", "host": ["{{baseUrl}}"] } }
+    },
+    {
+      "name": "Roles",
+      "item": [
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/api/roles" } }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/api/usuarios" } },
+        {
+          "name": "Get by Id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/usuarios/{{usuarioId}}" }
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Nuevo Usuario\",\n  \"email\": \"nuevo@example.com\",\n  \"password\": \"clave123\"\n}" },
+            "url": "{{baseUrl}}/api/usuarios/register"
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"julia@demo.local\",\n  \"password\": \"julia123\"\n}" },
+            "url": "{{baseUrl}}/api/usuarios/login"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{usuarioId}}\",\n  \"name\": \"Nombre Editado\",\n  \"email\": \"nuevo@demo.local\",\n  \"passwordHash\": \"clave123\",\n  \"roleId\": \"{{roleUserId}}\",\n  \"createdAt\": \"2026-01-01T00:00:00Z\"\n}" },
+            "url": "{{baseUrl}}/api/usuarios/{{usuarioId}}"
+          }
+        },
+        {
+          "name": "Delete",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/usuarios/{{usuarioId}}" }
+        }
+      ]
+    },
+    {
+      "name": "Sitios Turísticos",
+      "item": [
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/api/sitiosturisticos" } },
+        { "name": "Get by Id", "request": { "method": "GET", "url": "{{baseUrl}}/api/sitiosturisticos/{{sitioId}}" } },
+        {
+            "name": "Create",
+            "request": {
+              "method": "POST",
+              "header": [{"key":"Content-Type","value":"application/json"}],
+              "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Nuevo Sitio\",\n  \"descripcion\": \"Desc\",\n  \"ubicacion\": \"Ciudad\",\n  \"activo\": true\n}" },
+              "url": "{{baseUrl}}/api/sitiosturisticos"
+            }
+        },
+        {
+            "name": "Update",
+            "request": {
+              "method": "PUT",
+              "header": [{"key":"Content-Type","value":"application/json"}],
+              "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{sitioId}}\",\n  \"nombre\": \"Sitio Editado\",\n  \"descripcion\": \"Desc\",\n  \"ubicacion\": \"Ciudad\",\n  \"activo\": true\n}" },
+              "url": "{{baseUrl}}/api/sitiosturisticos/{{sitioId}}"
+            }
+        },
+        { "name": "Delete", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/sitiosturisticos/{{sitioId}}" } },
+        { "name": "Comentarios", "request": { "method": "GET", "url": "{{baseUrl}}/api/comentarios/sitio/{{sitioId}}" } },
+        { "name": "Valoraciones", "request": { "method": "GET", "url": "{{baseUrl}}/api/valoraciones/sitio/{{sitioId}}" } },
+        { "name": "Reacciones", "request": { "method": "GET", "url": "{{baseUrl}}/api/reacciones/sitio/{{sitioId}}" } },
+        { "name": "Stats Valoraciones", "request": { "method": "GET", "url": "{{baseUrl}}/api/valoraciones/sitio/{{sitioId}}/estadisticas" } },
+        { "name": "Stats Reacciones", "request": { "method": "GET", "url": "{{baseUrl}}/api/reacciones/sitio/{{sitioId}}/estadisticas" } },
+        { "name": "Imágenes", "request": { "method": "GET", "url": "{{baseUrl}}/api/imagenes/sitio/{{sitioId}}" } }
+      ]
+    },
+    {
+      "name": "Hoteles",
+      "item": [
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/api/hoteles" } },
+        { "name": "Get by Id", "request": { "method": "GET", "url": "{{baseUrl}}/api/hoteles/{{hotelId}}" } },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Hotel Nuevo\",\n  \"direccion\": \"Dir\",\n  \"precioNoche\": 100,\n  \"sitioId\": \"{{sitioId}}\",\n  \"activo\": true\n}" },
+            "url": "{{baseUrl}}/api/hoteles"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{hotelId}}\",\n  \"nombre\": \"Hotel Editado\",\n  \"direccion\": \"Dir\",\n  \"precioNoche\": 120,\n  \"sitioId\": \"{{sitioId}}\",\n  \"activo\": true\n}" },
+            "url": "{{baseUrl}}/api/hoteles/{{hotelId}}"
+          }
+        },
+        { "name": "Delete", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/hoteles/{{hotelId}}" } },
+        { "name": "Comentarios", "request": { "method": "GET", "url": "{{baseUrl}}/api/comentarios/hotel/{{hotelId}}" } },
+        { "name": "Valoraciones", "request": { "method": "GET", "url": "{{baseUrl}}/api/valoraciones/hotel/{{hotelId}}" } },
+        { "name": "Reacciones", "request": { "method": "GET", "url": "{{baseUrl}}/api/reacciones/hotel/{{hotelId}}" } },
+        { "name": "Stats Valoraciones", "request": { "method": "GET", "url": "{{baseUrl}}/api/valoraciones/hotel/{{hotelId}}/estadisticas" } },
+        { "name": "Stats Reacciones", "request": { "method": "GET", "url": "{{baseUrl}}/api/reacciones/hotel/{{hotelId}}/estadisticas" } },
+        { "name": "Imágenes", "request": { "method": "GET", "url": "{{baseUrl}}/api/imagenes/hotel/{{hotelId}}" } }
+      ]
+    },
+    {
+      "name": "Comentarios",
+      "item": [
+        { "name": "List all", "request": { "method": "GET", "url": "{{baseUrl}}/api/comentarios" } },
+        { "name": "Get by Id", "request": { "method": "GET", "url": "{{baseUrl}}/api/comentarios/{{comentarioId}}" } },
+        {
+          "name": "Crear comentario sitio",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"texto\": \"Hermoso lugar\",\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"sitioId\": \"{{sitioId}}\"\n}" },
+            "url": "{{baseUrl}}/api/comentarios"
+          }
+        },
+        {
+          "name": "Crear comentario hotel",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"texto\": \"Buen servicio\",\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"hotelId\": \"{{hotelId}}\"\n}" },
+            "url": "{{baseUrl}}/api/comentarios"
+          }
+        },
+        {
+          "name": "Responder comentario",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"texto\": \"Respuesta\"\n}" },
+            "url": "{{baseUrl}}/api/comentarios/{{comentarioId}}/responder"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{comentarioId}}\",\n  \"texto\": \"Editado\",\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"sitioId\": \"{{sitioId}}\",\n  \"hotelId\": null\n}" },
+            "url": "{{baseUrl}}/api/comentarios/{{comentarioId}}"
+          }
+        },
+        { "name": "Delete", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/comentarios/{{comentarioId}}" } }
+      ]
+    },
+    {
+      "name": "Valoraciones",
+      "item": [
+        { "name": "List all", "request": { "method": "GET", "url": "{{baseUrl}}/api/valoraciones" } },
+        { "name": "Get by Id", "request": { "method": "GET", "url": "{{baseUrl}}/api/valoraciones/{{valoracionId}}" } },
+        {
+          "name": "Crear valoracion sitio",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"puntuacion\": 5,\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"sitioId\": \"{{sitioId}}\"\n}" },
+            "url": "{{baseUrl}}/api/valoraciones"
+          }
+        },
+        {
+          "name": "Crear valoracion hotel",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"puntuacion\": 4,\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"hotelId\": \"{{hotelId}}\"\n}" },
+            "url": "{{baseUrl}}/api/valoraciones"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{valoracionId}}\",\n  \"puntuacion\": 3,\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"sitioId\": null,\n  \"hotelId\": \"{{hotelId}}\"\n}" },
+            "url": "{{baseUrl}}/api/valoraciones/{{valoracionId}}"
+          }
+        },
+        { "name": "Delete", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/valoraciones/{{valoracionId}}" } },
+        { "name": "Stats Sitio", "request": { "method": "GET", "url": "{{baseUrl}}/api/valoraciones/sitio/{{sitioId}}/estadisticas" } },
+        { "name": "Stats Hotel", "request": { "method": "GET", "url": "{{baseUrl}}/api/valoraciones/hotel/{{hotelId}}/estadisticas" } }
+      ]
+    },
+    {
+      "name": "Reacciones",
+      "item": [
+        { "name": "List all", "request": { "method": "GET", "url": "{{baseUrl}}/api/reacciones" } },
+        { "name": "Get by Id", "request": { "method": "GET", "url": "{{baseUrl}}/api/reacciones/{{reaccionId}}" } },
+        {
+          "name": "Me gusta sitio",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"meGusta\": true,\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"sitioId\": \"{{sitioId}}\"\n}" },
+            "url": "{{baseUrl}}/api/reacciones"
+          }
+        },
+        {
+          "name": "No me gusta hotel",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"meGusta\": false,\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"hotelId\": \"{{hotelId}}\"\n}" },
+            "url": "{{baseUrl}}/api/reacciones"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{reaccionId}}\",\n  \"meGusta\": true,\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"sitioId\": null,\n  \"hotelId\": \"{{hotelId}}\"\n}" },
+            "url": "{{baseUrl}}/api/reacciones/{{reaccionId}}"
+          }
+        },
+        { "name": "Delete", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/reacciones/{{reaccionId}}" } },
+        { "name": "Stats Sitio", "request": { "method": "GET", "url": "{{baseUrl}}/api/reacciones/sitio/{{sitioId}}/estadisticas" } },
+        { "name": "Stats Hotel", "request": { "method": "GET", "url": "{{baseUrl}}/api/reacciones/hotel/{{hotelId}}/estadisticas" } }
+      ]
+    },
+    {
+      "name": "Imagenes",
+      "item": [
+        { "name": "Listar imágenes sitio", "request": { "method": "GET", "url": "{{baseUrl}}/api/imagenes/sitio/{{sitioId}}" } },
+        { "name": "Listar imágenes hotel", "request": { "method": "GET", "url": "{{baseUrl}}/api/imagenes/hotel/{{hotelId}}" } },
+        { "name": "Listar imágenes usuario", "request": { "method": "GET", "url": "{{baseUrl}}/api/imagenes/usuario/{{usuarioId}}" } },
+        {
+          "name": "Crear imagen sitio",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "multipart/form-data" }],
+            "body": { "mode": "formdata", "formdata": [{ "key": "files", "type": "file", "src": "" }] },
+            "url": "{{baseUrl}}/api/imagenes/sitio/{{sitioId}}"
+          }
+        },
+        {
+          "name": "Crear imagen hotel",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "multipart/form-data" }],
+            "body": { "mode": "formdata", "formdata": [{ "key": "files", "type": "file", "src": "" }] },
+            "url": "{{baseUrl}}/api/imagenes/hotel/{{hotelId}}"
+          }
+        },
+        {
+          "name": "Crear imagen usuario",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "multipart/form-data" }],
+            "body": { "mode": "formdata", "formdata": [{ "key": "files", "type": "file", "src": "" }] },
+            "url": "{{baseUrl}}/api/imagenes/usuario/{{usuarioId}}"
+          }
+        },
+        { "name": "Delete imagen", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/imagenes/{{imagenId}}" } }
+      ]
+    },
+    {
+      "name": "Reservaciones",
+      "item": [
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/api/reservaciones" } },
+        { "name": "Get by Id", "request": { "method": "GET", "url": "{{baseUrl}}/api/reservaciones/{{reservacionId}}" } },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": { "mode": "raw", "raw": "{\n  \"fechaInicio\": \"2026-02-01T15:00:00Z\",\n  \"fechaFin\": \"2026-02-03T11:00:00Z\",\n  \"estado\": \"confirmada\",\n  \"total\": 120,\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"hotelId\": \"{{hotelId}}\"\n}" },
+            "url": "{{baseUrl}}/api/reservaciones"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{reservacionId}}\",\n  \"fechaInicio\": \"2026-02-02T15:00:00Z\",\n  \"fechaFin\": \"2026-02-04T11:00:00Z\",\n  \"estado\": \"confirmada\",\n  \"total\": 140,\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"hotelId\": \"{{hotelId}}\"\n}" },
+            "url": "{{baseUrl}}/api/reservaciones/{{reservacionId}}"
+          }
+        },
+        { "name": "Delete", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/reservaciones/{{reservacionId}}" } }
+      ]
+    },
+    {
+      "name": "Pagos",
+      "item": [
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/api/pagos" } },
+        { "name": "Get by Id", "request": { "method": "GET", "url": "{{baseUrl}}/api/pagos/{{pagoId}}" } },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": { "mode": "raw", "raw": "{\n  \"metodoPago\": \"tarjeta\",\n  \"monto\": 120,\n  \"estado\": \"pagado\",\n  \"reservacionId\": \"{{reservacionId}}\"\n}" },
+            "url": "{{baseUrl}}/api/pagos"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{pagoId}}\",\n  \"metodoPago\": \"tarjeta\",\n  \"monto\": 130,\n  \"estado\": \"pagado\",\n  \"reservacionId\": \"{{reservacionId}}\"\n}" },
+            "url": "{{baseUrl}}/api/pagos/{{pagoId}}"
+          }
+        },
+        { "name": "Delete", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/pagos/{{pagoId}}" } }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        { "name": "List", "request": { "method": "GET", "url": "{{baseUrl}}/api/products" } },
+        { "name": "Get by Id", "request": { "method": "GET", "url": "{{baseUrl}}/api/products/{{productId}}" } },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Producto\",\n  \"description\": \"Desc\",\n  \"price\": 10.5\n}" },
+            "url": "{{baseUrl}}/api/products"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{productId}}\",\n  \"name\": \"Producto Editado\",\n  \"description\": \"Desc\",\n  \"price\": 12.0\n}" },
+            "url": "{{baseUrl}}/api/products/{{productId}}"
+          }
+        },
+        { "name": "Delete", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/products/{{productId}}" } }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "https://localhost:7057" },
+    { "key": "sitioId", "value": "33333333-3333-3333-3333-333333333333" },
+    { "key": "hotelId", "value": "55555555-5555-5555-5555-555555555555" },
+    { "key": "usuarioId", "value": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
+    { "key": "comentarioId", "value": "77777777-7777-7777-7777-777777777777" },
+    { "key": "valoracionId", "value": "11110000-0000-0000-0000-000000000001" },
+    { "key": "reaccionId", "value": "22220000-0000-0000-0000-000000000001" },
+    { "key": "reservacionId", "value": "33330000-0000-0000-0000-000000000001" },
+    { "key": "pagoId", "value": "44440000-0000-0000-0000-000000000001" },
+    { "key": "imagenId", "value": "99990000-0000-0000-0000-000000000001" },
+    { "key": "productId", "value": "55550000-0000-0000-0000-000000000001" },
+    { "key": "roleUserId", "value": "22222222-2222-2222-2222-222222222222" }
+  ]
+}

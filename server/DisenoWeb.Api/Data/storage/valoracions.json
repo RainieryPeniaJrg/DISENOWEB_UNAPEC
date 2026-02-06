@@ -1,0 +1,34 @@
+[
+  {
+    "id": "11110000-0000-0000-0000-000000000001",
+    "puntuacion": 5,
+    "fecha": "2026-01-20T10:10:00Z",
+    "usuarioId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+    "sitioId": "33333333-3333-3333-3333-333333333333",
+    "hotelId": null
+  },
+  {
+    "id": "11110000-0000-0000-0000-000000000002",
+    "puntuacion": 4,
+    "fecha": "2026-01-20T12:05:00Z",
+    "usuarioId": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+    "sitioId": "33333333-3333-3333-3333-333333333333",
+    "hotelId": null
+  },
+  {
+    "id": "11110000-0000-0000-0000-000000000003",
+    "puntuacion": 5,
+    "fecha": "2026-01-21T10:00:00Z",
+    "usuarioId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+    "sitioId": null,
+    "hotelId": "55555555-5555-5555-5555-555555555555"
+  },
+  {
+    "id": "11110000-0000-0000-0000-000000000004",
+    "puntuacion": 3,
+    "fecha": "2026-01-21T11:30:00Z",
+    "usuarioId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "sitioId": null,
+    "hotelId": "66666666-6666-6666-6666-666666666666"
+  }
+]

@@ -1,0 +1,29 @@
+[
+  {
+    "id": "77777777-7777-7777-7777-777777777777",
+    "texto": "La playa es tranquila y limpia, perfecto para familias.",
+    "fecha": "2026-01-20T10:00:00Z",
+    "usuarioId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+    "sitioId": "33333333-3333-3333-3333-333333333333",
+    "hotelId": null,
+    "parentComentarioId": null
+  },
+  {
+    "id": "88888888-8888-8888-8888-888888888888",
+    "texto": "Confirmo, además el atardecer es espectacular.",
+    "fecha": "2026-01-20T12:00:00Z",
+    "usuarioId": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+    "sitioId": "33333333-3333-3333-3333-333333333333",
+    "hotelId": null,
+    "parentComentarioId": "77777777-7777-7777-7777-777777777777"
+  },
+  {
+    "id": "99999999-9999-9999-9999-999999999999",
+    "texto": "Habitaciones amplias y desayuno variado.",
+    "fecha": "2026-01-21T09:30:00Z",
+    "usuarioId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "sitioId": null,
+    "hotelId": "55555555-5555-5555-5555-555555555555",
+    "parentComentarioId": null
+  }
+]

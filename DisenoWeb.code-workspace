@@ -1,0 +1,39 @@
+{
+  "folders": [
+    {
+      "name": "disenoweb-root",
+      "path": "."
+    },
+    {
+      "name": "backend-api",
+      "path": "server/DisenoWeb.Api"
+    },
+    {
+      "name": "frontend-client",
+      "path": "client"
+    }
+  ],
+  "settings": {
+    "dotnet.defaultSolution": "DisenoWeb.slnx",
+    "files.exclude": {
+      "**/bin": true,
+      "**/obj": true,
+      "**/.vs": true,
+      "**/.DS_Store": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/bin": true,
+      "**/obj": true
+    },
+    "editor.formatOnSave": true,
+    "eslint.workingDirectories": [
+      {
+        "directory": "client",
+        "changeProcessCWD": true
+      }
+    ],
+    "typescript.tsdk": "client/node_modules/typescript/lib",
+    "files.trimTrailingWhitespace": true
+  }
+}
