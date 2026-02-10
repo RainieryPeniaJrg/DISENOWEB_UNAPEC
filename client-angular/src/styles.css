@@ -406,10 +406,22 @@ a {
 
 .image-strip img {
   width: 100%;
-  height: 120px;
+  height: 160px;
   object-fit: cover;
-  display: block;
 }
+
+@media (min-width: 768px) {
+  .image-strip img {
+    height: 220px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .image-strip img {
+    height: 360px;
+  }
+}
+
 
 .image-strip figcaption {
   padding: 8px 10px;

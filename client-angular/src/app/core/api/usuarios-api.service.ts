@@ -13,6 +13,9 @@ export class UsuariosApiService {
 
   async get(id: string): Promise<User> {
     const data = await firstValueFrom(this.http.get<{ usuario?: User } | User>(this.apiBase.api(`usuarios/${id}`)));
-    return "usuario" in data ? (data.usuario as User) : data;
-  }
+    if ('usuario' in data && data.usuario) {
+        return data.usuario;
+      }
+      return data as User;
+    }
 }

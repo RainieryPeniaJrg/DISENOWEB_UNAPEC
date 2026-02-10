@@ -37,7 +37,7 @@ import { Reservacion, User } from "../../core/models/domain.models";
         <ul class="mini-comments">
           <li *ngFor="let r of reservas">
             <p class="small">
-              {{ r.fechaInicio | date }} → {{ r.fechaFin | date }} · Estado: {{ r.estado }} · Total ${{ r.total }}
+              {{ r.fechaInicio | date }} → {{ r.fechaFin | date }} · Estado: {{ r.estado }} · Total {{ r.total }}
             </p>
           </li>
         </ul>

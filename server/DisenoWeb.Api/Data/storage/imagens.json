@@ -1,7 +1,7 @@
 [
   {
     "id": "99990000-0000-0000-0000-000000000001",
-    "url": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format\u0026fit=crop\u0026w=1200\u0026q=80",
+    "url": "https://www.shutterstock.com/shutterstock/videos/3730339693/thumb/1.jpg?ip=x480",
     "fileName": "",
     "descripcion": "Playa Bonita - vista a\u00E9rea",
     "esPrincipal": true,
@@ -11,7 +11,7 @@
   },
   {
     "id": "99990000-0000-0000-0000-000000000002",
-    "url": "https://images.unsplash.com/photo-1520901158340-5c1f193a5f51?auto=format\u0026fit=crop\u0026w=1200\u0026q=80",
+    "url": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/11/c9/35/7e/hotel-tropicoco.jpg?w=700&h=-1&s=1",
     "fileName": "",
     "descripcion": "Hotel Mar Azul - habitaci\u00F3n",
     "esPrincipal": true,
@@ -21,7 +21,7 @@
   },
   {
     "id": "99990000-0000-0000-0000-000000000003",
-    "url": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format\u0026fit=crop\u0026w=1200\u0026q=80",
+    "url": "https://cdn-icons-png.flaticon.com/512/3849/3849119.png",
     "fileName": "",
     "descripcion": "Perfil de usuario Julia",
     "esPrincipal": true,
@@ -31,7 +31,7 @@
   },
   {
     "id": "99990000-0000-0000-0000-000000000004",
-    "url": "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format\u0026fit=crop\u0026w=1200\u0026q=80",
+    "url": "https://thumbs.dreamstime.com/b/playa-agradable-con-las-palmeras-963342.jpg",
     "fileName": "",
     "descripcion": "Playa Bonita - palmeras",
     "esPrincipal": false,
@@ -41,12 +41,22 @@
   },
   {
     "id": "9e5c7666-d976-4379-aa61-c05eeae64ec8",
-    "url": "/uploads/hoteles/47db6c55-9b68-4312-abc0-c45f4bc30eeb.png",
+    "url": "https://res.cloudinary.com/amenitiz/image/upload/w_500,dpr_auto,f_auto,q_auto:good/v1724786380/svr6smygiwo5nqbyhiwb.jpg",
     "fileName": "vote-card.png",
     "descripcion": "vote-card",
     "esPrincipal": true,
     "sitioId": null,
     "hotelId": "66666666-6666-6666-6666-666666666666",
+    "usuarioId": null
+  },
+  {
+    "id": "99990000-0000-0000-0000-000000000005",
+    "url": "https://thumbs.dreamstime.com/b/salto-de-esmeralda-un-paraíso-tropical-escenario-selva-serena-con-una-majestuosa-cascada-rodeada-exuberante-vegetación-la-luz-386236095.jpg",
+    "fileName": "SaltoEsmeralda.png",
+    "descripcion": "Salto esmeralda",
+    "esPrincipal": true,
+    "sitioId": "44444444-4444-4444-4444-444444444444",
+    "hotelId": null,
     "usuarioId": null
   }
 ]

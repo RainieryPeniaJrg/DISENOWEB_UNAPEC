@@ -31,7 +31,7 @@ import { AuthService } from "../../core/state/auth.service";
             {{ auth.loading() ? "Enviando..." : mode === "login" ? "Acceder" : "Crear cuenta" }}
           </button>
         </form>
-        <p class="micro muted">Demo: julia@demo.local / julia123</p>
+        <p class="micro muted">Demo: julia#64;demo.local / julia123</p>
       </div>
     </ng-template>
   `,

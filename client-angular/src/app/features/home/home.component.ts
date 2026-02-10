@@ -55,43 +55,25 @@ type HotelView = {
 
       <ng-container *ngIf="!loading && !error">
         <section class="grid-3">
-          <app-stat-card title="Sitios turísticos" [value]="sitios.length" hint="Conectados a la API" />
-          <app-stat-card title="Hoteles" [value]="hoteles.length" hint="Listos para reservas (WIP)" />
-          <app-stat-card title="Comentarios recientes" [value]="comentariosRecientes.length" hint="Incluye respuestas" />
+          <app-stat-card title="Sitios turísticos" [value]="sitios.length" />
+          <app-stat-card title="Hoteles" [value]="hoteles.length" />
+          <app-stat-card title="Comentarios recientes" [value]="comentariosRecientes.length" />
         </section>
 
+        <!-- SITIOS -->
         <section class="stack-md">
-          <div class="section-head">
-            <h3>Destinos con feedback</h3>
-          </div>
           <div class="grid-2">
             <article *ngFor="let item of sitios; trackBy: trackSitio" class="panel">
-              <header class="card-header">
-                <div>
-                  <p class="eyebrow">Sitio</p>
-                  <h4>{{ item.sitio.nombre }}</h4>
-                  <p class="muted">{{ item.sitio.descripcion }}</p>
-                </div>
-              </header>
-              <div class="stats-row">
-                <div class="stat-badge">
-                  <p class="muted">Valoraciones</p>
-                  <div class="stat-value">{{ item.valoraciones.total }}</div>
-                  <p class="small muted">{{ item.valoraciones.promedio }}/5</p>
-                </div>
-                <div class="stat-badge">
-                  <p class="muted">Reacciones</p>
-                  <div class="stat-value">{{ item.reacciones.total }}</div>
-                  <p class="small muted">{{ toPercent(item.reacciones.promedioMeGusta) }}% me gusta</p>
-                </div>
-                <div class="stat-badge">
-                  <p class="muted">Comentarios</p>
-                  <div class="stat-value">{{ item.comentarios.length }}</div>
-                  <p class="small muted">incluye respuestas</p>
-                </div>
-              </div>
+              <h4>{{ item.sitio.nombre }}</h4>
+              <p class="muted">{{ item.sitio.descripcion }}</p>
+
               <app-image-strip [images]="item.imagenes" />
-              <ng-container [ngTemplateOutlet]="miniComments" [ngTemplateOutletContext]="{ comentarios: item.comentarios }" />
+
+              <ng-container
+                [ngTemplateOutlet]="miniComments"
+                [ngTemplateOutletContext]="{ $implicit: item.comentarios }"
+              />
+
               <app-quick-comment
                 *ngIf="userId as uid"
                 [usuarioId]="uid"
@@ -102,40 +84,21 @@ type HotelView = {
           </div>
         </section>
 
+        <!-- HOTELES -->
         <section class="stack-md">
-          <div class="section-head">
-            <h3>Hoteles</h3>
-            <p class="muted">Reservas y pagos siguen como WIP.</p>
-          </div>
           <div class="grid-2">
             <article *ngFor="let item of hoteles; trackBy: trackHotel" class="panel">
-              <header class="card-header">
-                <div>
-                  <p class="eyebrow">Hotel</p>
-                  <h4>{{ item.hotel.nombre }}</h4>
-                  <p class="muted">{{ item.hotel.direccion }}</p>
-                </div>
-                <div class="badge">${{ item.hotel.precioNoche.toFixed(2) }} / noche</div>
-              </header>
-              <div class="stats-row">
-                <div class="stat-badge">
-                  <p class="muted">Valoraciones</p>
-                  <div class="stat-value">{{ item.valoraciones.total }}</div>
-                  <p class="small muted">{{ item.valoraciones.promedio }}/5</p>
-                </div>
-                <div class="stat-badge">
-                  <p class="muted">Reacciones</p>
-                  <div class="stat-value">{{ item.reacciones.total }}</div>
-                  <p class="small muted">{{ toPercent(item.reacciones.promedioMeGusta) }}% me gusta</p>
-                </div>
-                <div class="stat-badge">
-                  <p class="muted">Comentarios</p>
-                  <div class="stat-value">{{ item.comentarios.length }}</div>
-                  <p class="small muted">incluye respuestas</p>
-                </div>
-              </div>
+              <h4>{{ item.hotel.nombre }}</h4>
+              <p class="muted">{{ item.hotel.direccion }}</p>
+              <div class="badge">{{ item.hotel.precioNoche.toFixed(2) }} / noche</div>
+
               <app-image-strip [images]="item.imagenes" />
-              <ng-container [ngTemplateOutlet]="miniComments" [ngTemplateOutletContext]="{ comentarios: item.comentarios }" />
+
+              <ng-container
+                [ngTemplateOutlet]="miniComments"
+                [ngTemplateOutletContext]="{ $implicit: item.comentarios }"
+              />
+
               <app-quick-comment
                 *ngIf="userId as uid"
                 [usuarioId]="uid"
@@ -145,23 +108,18 @@ type HotelView = {
             </article>
           </div>
         </section>
-
-        <section class="stack-md">
-          <div class="section-head">
-            <h3>Work in progress</h3>
-            <p class="muted">Reservas, pagos y perfil ya están enlazados en el router con placeholders.</p>
-          </div>
-          <app-wip-banner />
-        </section>
       </ng-container>
     </div>
 
-    <ng-template #miniComments let-comentarios="comentarios">
+    <!-- TEMPLATE DE COMENTARIOS -->
+    <ng-template #miniComments let-comentarios>
       <p *ngIf="!comentarios.length" class="muted small">Sin comentarios aún.</p>
       <ul *ngIf="comentarios.length" class="mini-comments">
-        <li *ngFor="let c of comentarios | slice: 0 : 3">
+        <li *ngFor="let c of getMiniComentarios(comentarios)">
           <p class="small">{{ c.texto }}</p>
-          <p class="muted micro">Usuario {{ c.usuarioId.slice(0, 6) }} · {{ c.fecha | date }}</p>
+          <p class="muted micro">
+            Usuario {{ c.usuarioId.slice(0, 6) }} · {{ c.fecha | date }}
+          </p>
         </li>
       </ul>
     </ng-template>
@@ -182,19 +140,30 @@ export class HomeComponent implements OnInit {
     public readonly auth: AuthService,
   ) {}
 
-  get comentariosRecientes(): Comentario[] {
-    const list = [...this.sitios.flatMap((s) => s.comentarios), ...this.hoteles.flatMap((h) => h.comentarios)];
-    return list.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()).slice(0, 6);
-  }
-
   get userId(): string | null {
     return this.auth.user()?.userId ?? null;
   }
 
+  get comentariosRecientes(): Comentario[] {
+    const all = [
+      ...this.sitios.flatMap((s) => s.comentarios),
+      ...this.hoteles.flatMap((h) => h.comentarios),
+    ];
+    return all
+      .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+      .slice(0, 6);
+  }
+
+  getMiniComentarios(comentarios: Comentario[]): Comentario[] {
+    return comentarios.slice(0, 3);
+  }
+
   async ngOnInit(): Promise<void> {
     try {
-      this.error = null;
-      const [sitiosData, hotelesData] = await Promise.all([this.sitiosApi.list(), this.hotelesApi.list()]);
+      const [sitiosData, hotelesData] = await Promise.all([
+        this.sitiosApi.list(),
+        this.hotelesApi.list(),
+      ]);
 
       this.sitios = await Promise.all(
         sitiosData.map(async ({ sitio, imagenes }) => {
@@ -217,9 +186,8 @@ export class HomeComponent implements OnInit {
           return { hotel, imagenes, valoraciones, reacciones, comentarios };
         }),
       );
-    } catch (err) {
-      console.error(err);
-      this.error = "No pudimos conectar con la API. Revisa que esté corriendo en https://localhost:7057";
+    } catch {
+      this.error = "No pudimos conectar con la API.";
     } finally {
       this.loading = false;
     }
@@ -235,10 +203,6 @@ export class HomeComponent implements OnInit {
     this.hoteles = this.hoteles.map((h) =>
       h.hotel.id === hotelId ? { ...h, comentarios: [comentario, ...h.comentarios] } : h,
     );
-  }
-
-  toPercent(value: number): number {
-    return Math.round(value * 100);
   }
 
   trackSitio(_: number, item: SitioView): string {

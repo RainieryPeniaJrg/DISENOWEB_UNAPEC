@@ -23,7 +23,7 @@ import { QuickCommentComponent } from "../../shared/components/quick-comment/qui
             <h4>{{ h.hotel.nombre }}</h4>
             <p class="muted">{{ h.hotel.direccion }}</p>
           </div>
-          <div class="badge">${{ h.hotel.precioNoche.toFixed(2) }} / noche</div>
+          <div class="badge">{{ h.hotel.precioNoche.toFixed(2) }} / noche</div>
         </header>
         <app-image-strip [images]="h.imagenes" />
         <h5>Comentarios</h5>
