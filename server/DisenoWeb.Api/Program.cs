@@ -1,15 +1,13 @@
 using DisenoWeb.Api.Data;
 using DisenoWeb.Api.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.Configure<JsonStorageOptions>(builder.Configuration.GetSection("JsonStorage"));
-builder.Services.PostConfigure<JsonStorageOptions>(opts =>
-{
-    opts.BasePath = Path.GetFullPath(opts.BasePath, builder.Environment.ContentRootPath);
-});
-builder.Services.AddSingleton(typeof(IRepository<>), typeof(JsonFileRepository<>));
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -32,6 +30,15 @@ builder.Services.AddCors(options =>
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await dbContext.Database.MigrateAsync();
+
+    var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+    await JsonSeedService.SeedAsync(dbContext, app.Environment, logger);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
