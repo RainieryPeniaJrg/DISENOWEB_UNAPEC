@@ -66,7 +66,7 @@ type SitioView = SitioConImagenes & {
           <div class="chip-row">
             <span class="pill pill-ghost">{{ item.reacciones.likes }} likes</span>
             <span class="pill pill-ghost">{{ item.reacciones.dislikes }} dislikes</span>
-            <span class="pill pill-ghost">{{ (comentarios[item.sitio.id] ?? []).length }} comentarios</span>
+            <span class="pill pill-ghost">{{ commentsFor(item.sitio.id).length }} comentarios</span>
           </div>
 
           <app-image-strip [images]="item.imagenes" />
@@ -78,7 +78,7 @@ type SitioView = SitioConImagenes & {
             </div>
 
             <app-empty-state
-              *ngIf="!(comentarios[item.sitio.id] ?? []).length"
+              *ngIf="!commentsFor(item.sitio.id).length"
               eyebrow="Comentarios"
               title="Aún sin comentarios"
               description="Sé la primera persona en compartir una recomendación."

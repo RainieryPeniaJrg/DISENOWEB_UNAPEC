@@ -33,10 +33,17 @@ import {
 } from "../models/domain.models";
 import { AuthResponse } from "../models/auth.models";
 
-function read<T>(source: Record<string, unknown> | null | undefined, ...keys: string[]): T | undefined {
-  if (!source) return undefined;
+type ApiRecord = Record<string, unknown>;
+
+function asApiRecord(source: unknown): ApiRecord | null {
+  return typeof source === "object" && source !== null ? (source as ApiRecord) : null;
+}
+
+function read<T>(source: unknown, ...keys: string[]): T | undefined {
+  const record = asApiRecord(source);
+  if (!record) return undefined;
   for (const key of keys) {
-    const value = source[key];
+    const value = record[key];
     if (value !== undefined) {
       return value as T;
     }
@@ -44,21 +51,21 @@ function read<T>(source: Record<string, unknown> | null | undefined, ...keys: st
   return undefined;
 }
 
-function readString(source: Record<string, unknown> | null | undefined, ...keys: string[]): string {
+function readString(source: unknown, ...keys: string[]): string {
   return String(read<unknown>(source, ...keys) ?? "");
 }
 
-function readNumber(source: Record<string, unknown> | null | undefined, ...keys: string[]): number {
+function readNumber(source: unknown, ...keys: string[]): number {
   const value = read<unknown>(source, ...keys);
   return typeof value === "number" ? value : Number(value ?? 0);
 }
 
-function readBoolean(source: Record<string, unknown> | null | undefined, ...keys: string[]): boolean {
+function readBoolean(source: unknown, ...keys: string[]): boolean {
   const value = read<unknown>(source, ...keys);
   return typeof value === "boolean" ? value : Boolean(value);
 }
 
-function readNullableString(source: Record<string, unknown> | null | undefined, ...keys: string[]): string | null {
+function readNullableString(source: unknown, ...keys: string[]): string | null {
   const value = read<unknown>(source, ...keys);
   if (value === undefined || value === null || value === "") return null;
   return String(value);

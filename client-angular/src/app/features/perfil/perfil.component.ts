@@ -89,7 +89,7 @@ import { EmptyStateComponent } from "../../shared/components/empty-state/empty-s
               <button class="btn primary" type="button" (click)="handleSave()" [disabled]="auth.loading()">
                 {{ auth.loading() ? "Guardando..." : "Guardar cambios" }}
               </button>
-              <span class="micro muted">Se sincroniza con el endpoint `usuarios/{id}`.</span>
+              <span class="micro muted">Se sincroniza con el endpoint usuarios por identificador.</span>
             </div>
           </article>
         </section>
