@@ -48,81 +48,187 @@ type HotelView = {
   ],
   template: `
     <div class="stack-lg">
-      <app-hero />
 
-      <div *ngIf="error" class="panel error">{{ error }}</div>
-      <div *ngIf="loading" class="panel">Cargando destinos y hoteles...</div>
+  <!-- HERO -->
 
-      <ng-container *ngIf="!loading && !error">
-        <section class="grid-3">
-          <app-stat-card title="Sitios turísticos" [value]="sitios.length" />
-          <app-stat-card title="Hoteles" [value]="hoteles.length" />
-          <app-stat-card title="Comentarios recientes" [value]="comentariosRecientes.length" />
-        </section>
+  <section class="hero">
 
-        <!-- SITIOS -->
-        <section class="stack-md">
-          <div class="grid-2">
-            <article *ngFor="let item of sitios; trackBy: trackSitio" class="panel">
-              <h4>{{ item.sitio.nombre }}</h4>
-              <p class="muted">{{ item.sitio.descripcion }}</p>
-
-              <app-image-strip [images]="item.imagenes" />
-
-              <ng-container
-                [ngTemplateOutlet]="miniComments"
-                [ngTemplateOutletContext]="{ $implicit: item.comentarios }"
-              />
-
-              <app-quick-comment
-                *ngIf="userId as uid"
-                [usuarioId]="uid"
-                [sitioId]="item.sitio.id"
-                (created)="appendSitioComment(item.sitio.id, $event)"
-              />
-            </article>
-          </div>
-        </section>
-
-        <!-- HOTELES -->
-        <section class="stack-md">
-          <div class="grid-2">
-            <article *ngFor="let item of hoteles; trackBy: trackHotel" class="panel">
-              <h4>{{ item.hotel.nombre }}</h4>
-              <p class="muted">{{ item.hotel.direccion }}</p>
-              <div class="badge">{{ item.hotel.precioNoche.toFixed(2) }} / noche</div>
-
-              <app-image-strip [images]="item.imagenes" />
-
-              <ng-container
-                [ngTemplateOutlet]="miniComments"
-                [ngTemplateOutletContext]="{ $implicit: item.comentarios }"
-              />
-
-              <app-quick-comment
-                *ngIf="userId as uid"
-                [usuarioId]="uid"
-                [hotelId]="item.hotel.id"
-                (created)="appendHotelComment(item.hotel.id, $event)"
-              />
-            </article>
-          </div>
-        </section>
-      </ng-container>
+    <div>
+      <h1>Explora destinos increíbles</h1>
+      <p>
+        Descubre playas, cascadas y hoteles recomendados por viajeros.
+      </p>
     </div>
 
-    <!-- TEMPLATE DE COMENTARIOS -->
-    <ng-template #miniComments let-comentarios>
-      <p *ngIf="!comentarios.length" class="muted small">Sin comentarios aún.</p>
-      <ul *ngIf="comentarios.length" class="mini-comments">
-        <li *ngFor="let c of getMiniComentarios(comentarios)">
-          <p class="small">{{ c.texto }}</p>
-          <p class="muted micro">
-            Usuario {{ c.usuarioId.slice(0, 6) }} · {{ c.fecha | date }}
-          </p>
-        </li>
+    <div class="hero-card">
+      <p class="muted small">Explora:</p>
+
+      <ul class="small">
+        <li>🏝 Destinos turísticos</li>
+        <li>🏨 Hoteles</li>
+        <li>💬 Opiniones reales</li>
       </ul>
-    </ng-template>
+    </div>
+
+  </section>
+
+  <!-- ESTADOS -->
+
+  <div *ngIf="error" class="panel">
+    {{ error }}
+  </div>
+
+  <div *ngIf="loading" class="panel">
+    Cargando destinos y hoteles...
+  </div>
+
+  <ng-container *ngIf="!loading && !error">
+
+    <!-- STATS -->
+
+    <section class="grid-3">
+
+      <app-stat-card
+        title="Sitios turísticos"
+        [value]="sitios.length">
+      </app-stat-card>
+
+      <app-stat-card
+        title="Hoteles"
+        [value]="hoteles.length">
+      </app-stat-card>
+
+      <app-stat-card
+        title="Comentarios recientes"
+        [value]="comentariosRecientes.length">
+      </app-stat-card>
+
+    </section>
+
+    <!-- SITIOS -->
+
+    <section class="stack-md">
+
+      <h2>Destinos populares</h2>
+
+      <div class="grid-2">
+
+        <article
+          *ngFor="let item of sitios; trackBy: trackSitio"
+          class="panel">
+
+          <div style="padding:18px">
+
+            <h4>{{ item.sitio.nombre }}</h4>
+
+            <p class="muted">
+              {{ item.sitio.descripcion }}
+            </p>
+
+          </div>
+
+          <app-image-strip
+            [images]="item.imagenes">
+          </app-image-strip>
+
+          <div style="padding:18px">
+
+            <ng-container
+              [ngTemplateOutlet]="miniComments"
+              [ngTemplateOutletContext]="{ comentarios: item.comentarios }">
+            </ng-container>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+    <!-- HOTELES -->
+
+    <section class="stack-md">
+
+      <h2>Hoteles recomendados</h2>
+
+      <div class="grid-2">
+
+        <article
+          *ngFor="let item of hoteles; trackBy: trackHotel"
+          class="panel">
+
+          <div style="padding:18px">
+
+            <div style="display:flex;justify-content:space-between;align-items:center">
+
+              <div>
+                <h4>{{ item.hotel.nombre }}</h4>
+
+                <p class="muted">
+                  {{ item.hotel.direccion }}
+                </p>
+              </div>
+
+              <div class="badge">
+                {{ item.hotel.precioNoche }} / noche
+              </div>
+
+            </div>
+
+          </div>
+
+          <app-image-strip
+            [images]="item.imagenes">
+          </app-image-strip>
+
+          <div style="padding:18px">
+
+            <ng-container
+              [ngTemplateOutlet]="miniComments"
+              [ngTemplateOutletContext]="{ comentarios: item.comentarios }">
+            </ng-container>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+  </ng-container>
+
+</div>
+
+
+<!-- TEMPLATE COMENTARIOS -->
+
+<ng-template #miniComments let-comentarios="comentarios">
+
+  <p *ngIf="!comentarios?.length" class="muted small">
+    Sin comentarios aún.
+  </p>
+
+  <ul *ngIf="comentarios?.length" class="mini-comments">
+
+    <li *ngFor="let c of getMiniComentarios(comentarios)">
+
+      <p class="small">
+        {{ c.texto }}
+      </p>
+
+      <p class="micro muted">
+        Usuario {{ c.usuarioId }}
+        ·
+        {{ c.fecha | date:'shortDate' }}
+      </p>
+
+    </li>
+
+  </ul>
+
+</ng-template>
   `,
 })
 export class HomeComponent implements OnInit {
