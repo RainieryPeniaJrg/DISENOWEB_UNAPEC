@@ -11,16 +11,20 @@ import { ComentariosApiService } from "../../../core/api/comentarios-api.service
   template: `
     <form class="stack-sm quick-comment" (submit)="handleSubmit($event)">
       <textarea
+        class="form-textarea"
         placeholder="Escribe tu comentario..."
         [(ngModel)]="texto"
         name="texto"
-        rows="2"
+        rows="3"
         required
       ></textarea>
       <p *ngIf="error" class="small error-text">{{ error }}</p>
-      <button class="btn primary" type="submit" [disabled]="loading">
+      <div class="action-row">
+        <button class="btn primary" type="submit" [disabled]="loading">
         {{ loading ? "Publicando..." : "Comentar" }}
-      </button>
+        </button>
+        <p class="micro muted">Comparte una observación útil para otros viajeros.</p>
+      </div>
     </form>
   `,
 })

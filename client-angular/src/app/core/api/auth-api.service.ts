@@ -2,6 +2,8 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { firstValueFrom } from "rxjs";
 import { ApiBaseService } from "./api-base.service";
+import { normalizeAuthResponse } from "./api-normalizers";
+import { ApiAuthResponse } from "../models/api.models";
 import { AuthResponse } from "../models/auth.models";
 import { User } from "../models/domain.models";
 
@@ -13,14 +15,14 @@ export class AuthApiService {
   ) {}
 
   register(name: string, email: string, password: string): Promise<AuthResponse> {
-    return firstValueFrom(
-      this.http.post<AuthResponse>(this.apiBase.api("usuarios/register"), { name, email, password }),
+    return firstValueFrom(this.http.post<ApiAuthResponse>(this.apiBase.api("usuarios/register"), { name, email, password })).then(
+      normalizeAuthResponse,
     );
   }
 
   login(email: string, password: string): Promise<AuthResponse> {
-    return firstValueFrom(
-      this.http.post<AuthResponse>(this.apiBase.api("usuarios/login"), { email, password }),
+    return firstValueFrom(this.http.post<ApiAuthResponse>(this.apiBase.api("usuarios/login"), { email, password })).then(
+      normalizeAuthResponse,
     );
   }
 

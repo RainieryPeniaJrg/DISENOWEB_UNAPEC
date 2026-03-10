@@ -2,6 +2,8 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { firstValueFrom } from "rxjs";
 import { ApiBaseService } from "./api-base.service";
+import { normalizeSitioConImagenes } from "./api-normalizers";
+import { ApiSitioConImagenes } from "../models/api.models";
 import { SitioConImagenes } from "../models/domain.models";
 
 @Injectable({ providedIn: "root" })
@@ -12,10 +14,12 @@ export class SitiosApiService {
   ) {}
 
   list(): Promise<SitioConImagenes[]> {
-    return firstValueFrom(this.http.get<SitioConImagenes[]>(this.apiBase.api("sitiosturisticos")));
+    return firstValueFrom(this.http.get<ApiSitioConImagenes[]>(this.apiBase.api("sitiosturisticos"))).then((items) =>
+      items.map(normalizeSitioConImagenes),
+    );
   }
 
   get(id: string): Promise<SitioConImagenes> {
-    return firstValueFrom(this.http.get<SitioConImagenes>(this.apiBase.api(`sitiosturisticos/${id}`)));
+    return firstValueFrom(this.http.get<ApiSitioConImagenes>(this.apiBase.api(`sitiosturisticos/${id}`))).then(normalizeSitioConImagenes);
   }
 }

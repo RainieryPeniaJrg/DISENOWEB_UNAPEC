@@ -7,7 +7,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string;
   roleId: string;
   createdAt: string;
 }
@@ -32,12 +32,17 @@ export interface Hotel {
 export interface Imagen {
   id: string;
   url: string;
-  fileName: string;
-  descripcion: string;
+  fileName?: string;
+  descripcion?: string;
   esPrincipal: boolean;
   sitioId?: string | null;
   hotelId?: string | null;
   usuarioId?: string | null;
+}
+
+export interface UsuarioConImagenes {
+  usuario: User;
+  imagenes: Imagen[];
 }
 
 export interface SitioConImagenes {

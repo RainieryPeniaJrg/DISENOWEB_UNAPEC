@@ -6,7 +6,7 @@ import { CommonModule } from "@angular/common";
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="panel stat-card">
+    <div class="stat-card">
       <p class="eyebrow">{{ title }}</p>
       <div class="stat-value">{{ value }}</div>
       <p *ngIf="hint" class="muted small">{{ hint }}</p>

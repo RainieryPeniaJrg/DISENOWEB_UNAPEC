@@ -10,7 +10,7 @@ import { resolveImageUrl } from "../../../core/utils/image-url.util";
   template: `
     <p *ngIf="!images.length" class="muted small">Sin imágenes.</p>
     <div *ngIf="images.length" class="image-strip">
-      <figure *ngFor="let img of images; trackBy: trackById" [class.highlight]="img.esPrincipal">
+      <figure *ngFor="let img of images; trackBy: trackById" class="image-frame" [class.highlight]="img.esPrincipal">
         <img [src]="resolveUrl(img.url)" [alt]="img.descripcion || 'Imagen'" loading="lazy" />
         <figcaption class="micro muted">{{ img.descripcion || "Sin descripción" }}</figcaption>
       </figure>

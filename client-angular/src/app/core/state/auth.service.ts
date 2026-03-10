@@ -2,13 +2,24 @@ import { Injectable, signal } from "@angular/core";
 import { AuthResponse } from "../models/auth.models";
 import { AuthApiService } from "../api/auth-api.service";
 
+const STORAGE_KEY = "disenoweb-session";
+
 @Injectable({ providedIn: "root" })
 export class AuthService {
   readonly user = signal<AuthResponse | null>(null);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
-  constructor(private readonly authApi: AuthApiService) {}
+  constructor(private readonly authApi: AuthApiService) {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        this.user.set(JSON.parse(saved) as AuthResponse);
+      } catch {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+  }
 
   async login(email: string, password: string): Promise<void> {
     this.loading.set(true);
@@ -19,8 +30,10 @@ export class AuthService {
         throw new Error(res.message);
       }
       this.user.set(res);
+      this.persistSession();
     } catch (err: unknown) {
       this.user.set(null);
+      localStorage.removeItem(STORAGE_KEY);
       this.error.set(this.extractError(err, "No pudimos iniciar sesión"));
     } finally {
       this.loading.set(false);
@@ -33,8 +46,10 @@ export class AuthService {
     try {
       const res = await this.authApi.register(name, email, password);
       this.user.set(res);
+      this.persistSession();
     } catch (err: unknown) {
       this.user.set(null);
+      localStorage.removeItem(STORAGE_KEY);
       this.error.set(this.extractError(err, "No pudimos registrar"));
     } finally {
       this.loading.set(false);
@@ -43,6 +58,7 @@ export class AuthService {
 
   logout(): void {
     this.user.set(null);
+    localStorage.removeItem(STORAGE_KEY);
   }
 
   async updateProfile(updates: { name?: string; email?: string; passwordHash?: string }): Promise<void> {
@@ -63,6 +79,7 @@ export class AuthService {
       };
       await this.authApi.updateProfile(payload);
       this.user.set({ ...current, name: payload.name, email: payload.email, passwordHash: payload.passwordHash });
+      this.persistSession();
     } catch (err: unknown) {
       this.error.set(this.extractError(err, "No pudimos actualizar el perfil"));
     } finally {
@@ -73,5 +90,11 @@ export class AuthService {
   private extractError(err: unknown, fallback: string): string {
     if (err instanceof Error) return err.message;
     return fallback;
+  }
+
+  private persistSession(): void {
+    const current = this.user();
+    if (!current) return;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
   }
 }

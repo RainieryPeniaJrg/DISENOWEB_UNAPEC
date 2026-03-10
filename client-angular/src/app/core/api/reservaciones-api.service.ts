@@ -2,6 +2,8 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { firstValueFrom } from "rxjs";
 import { ApiBaseService } from "./api-base.service";
+import { normalizeReservacion } from "./api-normalizers";
+import { ApiReservacion } from "../models/api.models";
 import { Reservacion } from "../models/domain.models";
 
 @Injectable({ providedIn: "root" })
@@ -12,6 +14,8 @@ export class ReservacionesApiService {
   ) {}
 
   list(): Promise<Reservacion[]> {
-    return firstValueFrom(this.http.get<Reservacion[]>(this.apiBase.api("reservaciones")));
+    return firstValueFrom(this.http.get<ApiReservacion[]>(this.apiBase.api("reservaciones"))).then((items) =>
+      items.map(normalizeReservacion),
+    );
   }
 }

@@ -8,30 +8,63 @@ import { AuthService } from "../../core/state/auth.service";
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="panel auth-panel" *ngIf="auth.user() as user; else authFormTpl">
+    <div class="sidebar-panel" *ngIf="auth.user() as user; else authFormTpl">
       <p class="eyebrow">Sesión</p>
-      <h4>{{ user.name }}</h4>
-      <p class="muted small">{{ user.email }}</p>
-      <button class="btn ghost" (click)="auth.logout()">⇦ Cerrar sesión</button>
+      <div class="stack-sm">
+        <div class="summary-card">
+          <strong>{{ user.name }}</strong>
+          <p class="small muted">{{ user.email }}</p>
+        </div>
+        <div class="chip-row">
+          <span class="pill pill-primary">Autenticado</span>
+          <span class="pill pill-ghost">Perfil listo</span>
+        </div>
+        <button class="btn ghost" type="button" (click)="auth.logout()">Cerrar sesión</button>
+      </div>
     </div>
 
     <ng-template #authFormTpl>
-      <div class="panel auth-panel">
+      <div class="sidebar-panel">
         <div class="tabs">
-          <button [class.active]="mode === 'login'" (click)="mode = 'login'">Acceder</button>
-          <button [class.active]="mode === 'register'" (click)="mode = 'register'">Registrarse</button>
+          <button class="btn ghost" type="button" [class.active]="mode === 'login'" (click)="mode = 'login'">Acceder</button>
+          <button class="btn ghost" type="button" [class.active]="mode === 'register'" (click)="mode = 'register'">
+            Registrarse
+          </button>
         </div>
 
         <form class="stack-sm" (submit)="onSubmit($event)">
-          <input *ngIf="mode === 'register'" [(ngModel)]="name" name="name" placeholder="Nombre" required />
-          <input [(ngModel)]="email" name="email" type="email" placeholder="Email" required />
-          <input [(ngModel)]="password" name="password" type="password" placeholder="Password" required />
+          <div class="form-field" *ngIf="mode === 'register'">
+            <label class="small muted" for="auth-name">Nombre</label>
+            <input id="auth-name" class="form-input" [(ngModel)]="name" name="name" placeholder="Tu nombre" required />
+          </div>
+
+          <div class="form-field">
+            <label class="small muted" for="auth-email">Email</label>
+            <input id="auth-email" class="form-input" [(ngModel)]="email" name="email" type="email" placeholder="tu@email.com" required />
+          </div>
+
+          <div class="form-field">
+            <label class="small muted" for="auth-password">Password</label>
+            <input
+              id="auth-password"
+              class="form-input"
+              [(ngModel)]="password"
+              name="password"
+              type="password"
+              placeholder="Password"
+              required
+            />
+          </div>
+
           <p *ngIf="auth.error()" class="small error-text">{{ auth.error() }}</p>
-          <button class="btn primary" type="submit" [disabled]="auth.loading()">
-            {{ auth.loading() ? "Enviando..." : mode === "login" ? "Acceder" : "Crear cuenta" }}
-          </button>
+
+          <div class="action-row">
+            <button class="btn primary" type="submit" [disabled]="auth.loading()">
+              {{ auth.loading() ? "Procesando..." : mode === "login" ? "Entrar" : "Crear cuenta" }}
+            </button>
+            <span class="micro muted">Demo: julia@demo.local / julia123</span>
+          </div>
         </form>
-        <p class="micro muted">Demo: julia#64;demo.local / julia123</p>
       </div>
     </ng-template>
   `,

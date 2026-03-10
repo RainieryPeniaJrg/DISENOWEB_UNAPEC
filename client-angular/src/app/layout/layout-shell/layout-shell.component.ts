@@ -3,9 +3,15 @@ import { CommonModule } from "@angular/common";
 import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { ThemeService } from "../../core/state/theme.service";
 import { AuthService } from "../../core/state/auth.service";
+import { ApiHealthService } from "../../core/state/api-health.service";
 import { AuthPanelComponent } from "../auth-panel/auth-panel.component";
 
-type NavItem = { to: string; label: string; badge?: string | null };
+type NavItem = {
+  to: string;
+  label: string;
+  description: string;
+  badge?: string;
+};
 
 @Component({
   selector: "app-layout-shell",
@@ -13,44 +19,74 @@ type NavItem = { to: string; label: string; badge?: string | null };
   imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet, AuthPanelComponent],
   template: `
     <div class="app-shell">
+      <div class="shell-backdrop" aria-hidden="true"></div>
+
       <header class="topbar">
-        <div class="brand">
-          <div class="brand-mark" aria-hidden="true"></div>
-          <div>
-            <p class="eyebrow">DisenoWeb</p>
-            <h1>Experiencias turísticas</h1>
+        <div class="topbar-panel">
+          <div class="brand">
+            <button class="icon-btn hide-desktop" type="button" (click)="sidebarOpen = !sidebarOpen" aria-label="Abrir menú">
+              {{ sidebarOpen ? "Cerrar" : "Menú" }}
+            </button>
+            <div class="brand-mark" aria-hidden="true"></div>
+            <div class="brand-copy">
+              <p class="eyebrow">DisenoWeb</p>
+              <h2>Turismo dominicano con datos reales</h2>
+              <p class="muted small">UI centralizada para explorar, comparar y preparar reservas.</p>
+            </div>
           </div>
-        </div>
-        <div class="top-links">
-          <button class="icon-btn" (click)="sidebarOpen = !sidebarOpen" title="Toggle menú">
-            {{ sidebarOpen ? "☰" : "☷" }}
-          </button>
-          <button class="icon-btn" (click)="theme.toggle()" title="Cambiar tema">
-            {{ theme.theme() === "dark" ? "🌙" : "☀️" }}
-          </button>
-          <span class="status-dot online" aria-label="API status"></span>
-          <p class="muted">{{ greeting }}</p>
+
+          <div class="topbar-actions">
+            <span class="status-pill" [ngClass]="apiHealth.status()">
+              {{ healthLabel }}
+            </span>
+            <span class="pill pill-ghost hide-mobile">{{ sessionLabel }}</span>
+            <button class="icon-btn" type="button" (click)="apiHealth.refresh()" aria-label="Verificar API">API</button>
+            <button class="icon-btn" type="button" (click)="theme.toggle()" aria-label="Cambiar tema">
+              {{ theme.theme() === "dark" ? "Claro" : "Oscuro" }}
+            </button>
+          </div>
         </div>
       </header>
 
       <div class="layout">
-        <aside class="sidebar" [class.collapsed]="!sidebarOpen">
-          <nav>
-            <p class="muted">Navegación</p>
-            <ul>
+        <aside class="sidebar" [class.open]="sidebarOpen">
+          <section class="sidebar-panel">
+            <p class="eyebrow">Navegación</p>
+            <ul class="nav-list">
               <li *ngFor="let item of navItems">
-                <a [routerLink]="item.to" routerLinkActive="nav-link active" [routerLinkActiveOptions]="{ exact: item.to === '/' }" class="nav-link">
-                  <span>{{ item.label }}</span>
+                <a
+                  [routerLink]="item.to"
+                  routerLinkActive="nav-link active"
+                  [routerLinkActiveOptions]="{ exact: item.to === '/' }"
+                  class="nav-link"
+                  (click)="handleNavClick()"
+                >
+                  <div class="nav-link-main">
+                    <span class="nav-link-title">{{ item.label }}</span>
+                    <span class="micro muted">{{ item.description }}</span>
+                  </div>
                   <span *ngIf="item.badge" class="pill pill-ghost">{{ item.badge }}</span>
                 </a>
               </li>
             </ul>
-          </nav>
-          <div class="sidebar-card">
-            <p class="eyebrow">Contexto actual</p>
-            <p class="muted">Frontend Angular en migración paridad 1:1</p>
-            <p class="small">Usa el menú para explorar. Las vistas marcadas como WIP muestran placeholder listo para integrar.</p>
-          </div>
+          </section>
+
+          <section class="sidebar-panel">
+            <p class="eyebrow">Estado de la app</p>
+            <div class="stack-sm">
+              <div class="summary-card">
+                <p class="small">Sesión</p>
+                <strong>{{ sessionLabel }}</strong>
+                <p class="micro muted">{{ sessionHint }}</p>
+              </div>
+              <div class="summary-card">
+                <p class="small">API</p>
+                <strong>{{ healthLabel }}</strong>
+                <p class="micro muted">Última verificación: {{ checkedAtLabel }}</p>
+              </div>
+            </div>
+          </section>
+
           <app-auth-panel />
         </aside>
 
@@ -60,35 +96,65 @@ type NavItem = { to: string; label: string; badge?: string | null };
       </div>
 
       <footer class="footer">
-        <div>© 2026 DisenoWeb · Demo front conectado a API JSON</div>
-        <div class="footer-links">
-          <a href="https://localhost:7057/swagger" target="_blank" rel="">Swagger</a>
-          <span aria-hidden="true">•</span>
-          <a href="https://localhost:7057/api" target="_blank" rel="">API base</a>
+        <div class="footer-panel">
+          <p class="small">DisenoWeb 2026 · Front Angular alineado con la API de turismo.</p>
+          <div class="footer-links">
+            <a class="pill pill-ghost" href="https://localhost:7057/swagger" target="_blank" rel="noreferrer">Swagger</a>
+            <a class="pill pill-ghost" href="https://localhost:7057/api/hoteles" target="_blank" rel="noreferrer">Hoteles API</a>
+          </div>
         </div>
       </footer>
     </div>
   `,
 })
 export class LayoutShellComponent {
-  sidebarOpen = true;
+  sidebarOpen = false;
 
   readonly navItems: NavItem[] = [
-    { to: "/", label: "Inicio" },
-    { to: "/sitios", label: "Sitios" },
-    { to: "/hoteles", label: "Hoteles" },
-    { to: "/reservas", label: "Reservas", badge: "WIP" },
-    { to: "/pagos", label: "Pagos", badge: "WIP" },
-    { to: "/perfil", label: "Perfil", badge: "WIP" },
+    { to: "/", label: "Inicio", description: "Resumen de destinos y actividad" },
+    { to: "/sitios", label: "Sitios", description: "Descubrimiento y comentarios" },
+    { to: "/hoteles", label: "Hoteles", description: "Comparación de estadías" },
+    { to: "/reservas", label: "Reservas", description: "Lectura del API actual", badge: "API" },
+    { to: "/pagos", label: "Pagos", description: "Historial y estados", badge: "API" },
+    { to: "/perfil", label: "Perfil", description: "Cuenta, sesión y reservaciones" },
   ];
 
   constructor(
     public readonly theme: ThemeService,
     public readonly auth: AuthService,
+    public readonly apiHealth: ApiHealthService,
   ) {}
 
-  get greeting(): string {
+  get healthLabel(): string {
+    switch (this.apiHealth.status()) {
+      case "online":
+        return "API disponible";
+      case "offline":
+        return "API no disponible";
+      default:
+        return "Verificando API";
+    }
+  }
+
+  get checkedAtLabel(): string {
+    const value = this.apiHealth.lastCheckedAt();
+    return value ? new Date(value).toLocaleTimeString() : "pendiente";
+  }
+
+  get sessionLabel(): string {
     const user = this.auth.user();
-    return user ? `Hola, ${user.name}` : "API conectada";
+    return user ? `Sesión activa: ${user.name}` : "Invitado";
+  }
+
+  get sessionHint(): string {
+    return this.auth.user()
+      ? "Puedes comentar, editar perfil y revisar tu actividad."
+      : "Accede para comentar y personalizar tu experiencia.";
+  }
+
+  handleNavClick(): void {
+    if (window.innerWidth <= 1080) {
+      this.sidebarOpen = false;
+    }
   }
 }
