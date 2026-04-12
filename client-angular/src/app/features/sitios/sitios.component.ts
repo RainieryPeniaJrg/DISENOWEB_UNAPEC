@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { finalize, forkJoin, map, of, switchMap } from "rxjs";
 import { ComentariosApiService } from "../../core/api/comentarios-api.service";
 import { ReaccionesApiService } from "../../core/api/reacciones-api.service";
 import { SitiosApiService } from "../../core/api/sitios-api.service";
@@ -126,27 +127,45 @@ export class SitiosComponent implements OnInit {
     ];
   }
 
-  async ngOnInit(): Promise<void> {
-    try {
-      const data = await this.sitiosApi.list();
-      const enriched = await Promise.all(
-        data.map(async (item) => {
-          const [valoraciones, reacciones, comentarios] = await Promise.all([
-            this.valoracionesApi.statsSitio(item.sitio.id),
-            this.reaccionesApi.statsSitio(item.sitio.id),
-            this.comentariosApi.listBySitio(item.sitio.id),
-          ]);
-          this.comentarios[item.sitio.id] = comentarios.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
-          return { ...item, valoraciones, reacciones };
-        }),
-      );
-      this.sitios = enriched;
-    } catch (err) {
-      console.error(err);
-      this.error = "Asegura que la API esté disponible y responda el endpoint de sitios.";
-    } finally {
-      this.loading = false;
-    }
+  ngOnInit(): void {
+    this.sitiosApi
+      .list()
+      .pipe(
+        switchMap((data) =>
+          data.length
+            ? forkJoin(
+                data.map((item) =>
+                  forkJoin({
+                    valoraciones: this.valoracionesApi.statsSitio(item.sitio.id),
+                    reacciones: this.reaccionesApi.statsSitio(item.sitio.id),
+                    comentarios: this.comentariosApi.listBySitio(item.sitio.id),
+                  }).pipe(
+                    map(({ valoraciones, reacciones, comentarios }) => ({
+                      ...item,
+                      valoraciones,
+                      reacciones,
+                      comentarios,
+                    })),
+                  ),
+                ),
+              )
+            : of([] as Array<SitioView & { comentarios: Comentario[] }>),
+        ),
+        finalize(() => (this.loading = false)),
+      )
+      .subscribe({
+        next: (enriched) => {
+          this.comentarios = enriched.reduce<Record<string, Comentario[]>>((acc, item) => {
+            acc[item.sitio.id] = [...item.comentarios].sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
+            return acc;
+          }, {});
+          this.sitios = enriched.map(({ comentarios: _comentarios, ...item }) => item);
+        },
+        error: (err) => {
+          console.error(err);
+          this.error = "Asegura que la API esté disponible y responda el endpoint de sitios.";
+        },
+      });
   }
 
   appendComment(sitioId: string, comentario: Comentario): void {

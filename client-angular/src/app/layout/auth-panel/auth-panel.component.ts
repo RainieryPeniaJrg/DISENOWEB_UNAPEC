@@ -62,7 +62,7 @@ import { AuthService } from "../../core/state/auth.service";
             <button class="btn primary" type="submit" [disabled]="auth.loading()">
               {{ auth.loading() ? "Procesando..." : mode === "login" ? "Entrar" : "Crear cuenta" }}
             </button>
-            <span class="micro muted">Demo: julia@demo.local / julia123</span>
+            <span class="micro muted">Demo: admin@demo.local / admin123 o julia@demo.local / julia123</span>
           </div>
         </form>
       </div>
@@ -77,12 +77,12 @@ export class AuthPanelComponent {
 
   constructor(public readonly auth: AuthService) {}
 
-  async onSubmit(event: Event): Promise<void> {
+  onSubmit(event: Event): void {
     event.preventDefault();
     if (this.mode === "login") {
-      await this.auth.login(this.email, this.password);
+      this.auth.login(this.email, this.password).subscribe();
       return;
     }
-    await this.auth.register(this.name || "Usuario", this.email, this.password);
+    this.auth.register(this.name || "Usuario", this.email, this.password).subscribe();
   }
 }

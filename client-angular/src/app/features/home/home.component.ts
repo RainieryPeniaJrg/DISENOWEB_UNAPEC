@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { finalize, forkJoin, map, of, switchMap } from "rxjs";
 import { HeroComponent } from "../../shared/components/hero/hero.component";
 import { StatCardComponent } from "../../shared/components/stat-card/stat-card.component";
 import { ImageStripComponent } from "../../shared/components/image-strip/image-strip.component";
@@ -246,36 +247,50 @@ export class HomeComponent implements OnInit {
     return avg.toFixed(1);
   }
 
-  async ngOnInit(): Promise<void> {
-    try {
-      const [sitiosData, hotelesData] = await Promise.all([this.sitiosApi.list(), this.hotelesApi.list()]);
+  ngOnInit(): void {
+    forkJoin({
+      sitiosData: this.sitiosApi.list(),
+      hotelesData: this.hotelesApi.list(),
+    })
+      .pipe(
+        switchMap(({ sitiosData, hotelesData }) => {
+          const sitios$ = sitiosData.length
+            ? forkJoin(
+                sitiosData.map(({ sitio, imagenes }) =>
+                  forkJoin({
+                    valoraciones: this.valoracionesApi.statsSitio(sitio.id),
+                    reacciones: this.reaccionesApi.statsSitio(sitio.id),
+                    comentarios: this.comentariosApi.listBySitio(sitio.id),
+                  }).pipe(map(({ valoraciones, reacciones, comentarios }) => ({ sitio, imagenes, valoraciones, reacciones, comentarios }))),
+                ),
+              )
+            : of([] as SitioView[]);
 
-      this.sitios = await Promise.all(
-        sitiosData.map(async ({ sitio, imagenes }) => {
-          const [valoraciones, reacciones, comentarios] = await Promise.all([
-            this.valoracionesApi.statsSitio(sitio.id),
-            this.reaccionesApi.statsSitio(sitio.id),
-            this.comentariosApi.listBySitio(sitio.id),
-          ]);
-          return { sitio, imagenes, valoraciones, reacciones, comentarios };
-        }),
-      );
+          const hoteles$ = hotelesData.length
+            ? forkJoin(
+                hotelesData.map(({ hotel, imagenes }) =>
+                  forkJoin({
+                    valoraciones: this.valoracionesApi.statsHotel(hotel.id),
+                    reacciones: this.reaccionesApi.statsHotel(hotel.id),
+                    comentarios: this.comentariosApi.listByHotel(hotel.id),
+                  }).pipe(map(({ valoraciones, reacciones, comentarios }) => ({ hotel, imagenes, valoraciones, reacciones, comentarios }))),
+                ),
+              )
+            : of([] as HotelView[]);
 
-      this.hoteles = await Promise.all(
-        hotelesData.map(async ({ hotel, imagenes }) => {
-          const [valoraciones, reacciones, comentarios] = await Promise.all([
-            this.valoracionesApi.statsHotel(hotel.id),
-            this.reaccionesApi.statsHotel(hotel.id),
-            this.comentariosApi.listByHotel(hotel.id),
-          ]);
-          return { hotel, imagenes, valoraciones, reacciones, comentarios };
+          return forkJoin({ sitios: sitios$, hoteles: hoteles$ });
         }),
-      );
-    } catch {
-      this.error = "Revisa que la API esté ejecutándose en https://localhost:7057.";
-    } finally {
-      this.loading = false;
-    }
+        finalize(() => (this.loading = false)),
+      )
+      .subscribe({
+        next: ({ sitios, hoteles }) => {
+          this.sitios = sitios;
+          this.hoteles = hoteles;
+        },
+        error: () => {
+          this.error = "Revisa que la API esté ejecutándose en http://localhost:5000.";
+        },
+      });
   }
 
   ratingLabel(stats: ValoracionStats): string {

@@ -5,6 +5,7 @@ import { ThemeService } from "../../core/state/theme.service";
 import { AuthService } from "../../core/state/auth.service";
 import { ApiHealthService } from "../../core/state/api-health.service";
 import { AuthPanelComponent } from "../auth-panel/auth-panel.component";
+import { environment } from "../../../environments/environment";
 
 type NavItem = {
   to: string;
@@ -99,8 +100,8 @@ type NavItem = {
         <div class="footer-panel">
           <p class="small">DisenoWeb 2026 · Front Angular alineado con la API de turismo.</p>
           <div class="footer-links">
-            <a class="pill pill-ghost" href="https://localhost:7057/swagger" target="_blank" rel="noreferrer">Swagger</a>
-            <a class="pill pill-ghost" href="https://localhost:7057/api/hoteles" target="_blank" rel="noreferrer">Hoteles API</a>
+            <a class="pill pill-ghost" [href]="apiRootUrl" target="_blank" rel="noreferrer">API Root</a>
+            <a class="pill pill-ghost" [href]="apiHotelesUrl" target="_blank" rel="noreferrer">Hoteles API</a>
           </div>
         </div>
       </footer>
@@ -110,20 +111,36 @@ type NavItem = {
 export class LayoutShellComponent {
   sidebarOpen = false;
 
-  readonly navItems: NavItem[] = [
-    { to: "/", label: "Inicio", description: "Resumen de destinos y actividad" },
-    { to: "/sitios", label: "Sitios", description: "Descubrimiento y comentarios" },
-    { to: "/hoteles", label: "Hoteles", description: "Comparación de estadías" },
-    { to: "/reservas", label: "Reservas", description: "Lectura del API actual", badge: "API" },
-    { to: "/pagos", label: "Pagos", description: "Historial y estados", badge: "API" },
-    { to: "/perfil", label: "Perfil", description: "Cuenta, sesión y reservaciones" },
-  ];
-
   constructor(
     public readonly theme: ThemeService,
     public readonly auth: AuthService,
     public readonly apiHealth: ApiHealthService,
   ) {}
+
+  get navItems(): NavItem[] {
+    const items: NavItem[] = [
+      { to: "/", label: "Inicio", description: "Resumen de destinos y actividad" },
+      { to: "/sitios", label: "Sitios", description: "Descubrimiento y comentarios" },
+      { to: "/hoteles", label: "Hoteles", description: "Comparación de estadías" },
+      { to: "/reservas", label: "Reservas", description: "Gestión de reservaciones", badge: "API" },
+      { to: "/pagos", label: "Pagos", description: "Historial, estados y gestión", badge: "API" },
+      { to: "/perfil", label: "Perfil", description: "Cuenta, sesión y reservaciones" },
+    ];
+
+    if (this.auth.isAdmin()) {
+      items.push({ to: "/admin", label: "Admin", description: "CRUD central por módulos", badge: "CRUD" });
+    }
+
+    return items;
+  }
+
+  get apiRootUrl(): string {
+    return environment.apiBaseUrl;
+  }
+
+  get apiHotelesUrl(): string {
+    return `${environment.apiBaseUrl}/api/hoteles`;
+  }
 
   get healthLabel(): string {
     switch (this.apiHealth.status()) {

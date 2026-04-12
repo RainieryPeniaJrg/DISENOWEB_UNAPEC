@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { firstValueFrom } from "rxjs";
+import { Observable, map } from "rxjs";
 import { ApiBaseService } from "./api-base.service";
 import { normalizeHotelConImagenes } from "./api-normalizers";
 import { ApiHotelConImagenes } from "../models/api.models";
-import { HotelConImagenes } from "../models/domain.models";
+import { Hotel, HotelConImagenes } from "../models/domain.models";
 
 @Injectable({ providedIn: "root" })
 export class HotelesApiService {
@@ -13,13 +13,23 @@ export class HotelesApiService {
     private readonly apiBase: ApiBaseService,
   ) {}
 
-  list(): Promise<HotelConImagenes[]> {
-    return firstValueFrom(this.http.get<ApiHotelConImagenes[]>(this.apiBase.api("hoteles"))).then((items) =>
-      items.map(normalizeHotelConImagenes),
-    );
+  list(): Observable<HotelConImagenes[]> {
+    return this.http.get<ApiHotelConImagenes[]>(this.apiBase.api("hoteles")).pipe(map((items) => items.map(normalizeHotelConImagenes)));
   }
 
-  get(id: string): Promise<HotelConImagenes> {
-    return firstValueFrom(this.http.get<ApiHotelConImagenes>(this.apiBase.api(`hoteles/${id}`))).then(normalizeHotelConImagenes);
+  get(id: string): Observable<HotelConImagenes> {
+    return this.http.get<ApiHotelConImagenes>(this.apiBase.api(`hoteles/${id}`)).pipe(map(normalizeHotelConImagenes));
+  }
+
+  create(payload: Omit<Hotel, "id">): Observable<HotelConImagenes> {
+    return this.http.post<ApiHotelConImagenes>(this.apiBase.api("hoteles"), payload).pipe(map(normalizeHotelConImagenes));
+  }
+
+  update(payload: Hotel): Observable<void> {
+    return this.http.put<void>(this.apiBase.api(`hoteles/${payload.id}`), payload);
+  }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(this.apiBase.api(`hoteles/${id}`));
   }
 }

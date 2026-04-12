@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { finalize, forkJoin, map, of, switchMap } from "rxjs";
 import { ComentariosApiService } from "../../core/api/comentarios-api.service";
 import { HotelesApiService } from "../../core/api/hoteles-api.service";
 import { ReaccionesApiService } from "../../core/api/reacciones-api.service";
@@ -132,27 +133,45 @@ export class HotelesComponent implements OnInit {
     ];
   }
 
-  async ngOnInit(): Promise<void> {
-    try {
-      const data = await this.hotelesApi.list();
-      const enriched = await Promise.all(
-        data.map(async (item) => {
-          const [valoraciones, reacciones, comentarios] = await Promise.all([
-            this.valoracionesApi.statsHotel(item.hotel.id),
-            this.reaccionesApi.statsHotel(item.hotel.id),
-            this.comentariosApi.listByHotel(item.hotel.id),
-          ]);
-          this.comentarios[item.hotel.id] = comentarios.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
-          return { ...item, valoraciones, reacciones };
-        }),
-      );
-      this.hoteles = enriched;
-    } catch (err) {
-      console.error(err);
-      this.error = "Asegura que la API esté disponible y responda el endpoint de hoteles.";
-    } finally {
-      this.loading = false;
-    }
+  ngOnInit(): void {
+    this.hotelesApi
+      .list()
+      .pipe(
+        switchMap((data) =>
+          data.length
+            ? forkJoin(
+                data.map((item) =>
+                  forkJoin({
+                    valoraciones: this.valoracionesApi.statsHotel(item.hotel.id),
+                    reacciones: this.reaccionesApi.statsHotel(item.hotel.id),
+                    comentarios: this.comentariosApi.listByHotel(item.hotel.id),
+                  }).pipe(
+                    map(({ valoraciones, reacciones, comentarios }) => ({
+                      ...item,
+                      valoraciones,
+                      reacciones,
+                      comentarios,
+                    })),
+                  ),
+                ),
+              )
+            : of([] as Array<HotelView & { comentarios: Comentario[] }>),
+        ),
+        finalize(() => (this.loading = false)),
+      )
+      .subscribe({
+        next: (enriched) => {
+          this.comentarios = enriched.reduce<Record<string, Comentario[]>>((acc, item) => {
+            acc[item.hotel.id] = [...item.comentarios].sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
+            return acc;
+          }, {});
+          this.hoteles = enriched.map(({ comentarios: _comentarios, ...item }) => item);
+        },
+        error: (err) => {
+          console.error(err);
+          this.error = "Asegura que la API esté disponible y responda el endpoint de hoteles.";
+        },
+      });
   }
 
   appendComment(hotelId: string, comentario: Comentario): void {

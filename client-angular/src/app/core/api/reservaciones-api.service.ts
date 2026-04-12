@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { firstValueFrom } from "rxjs";
+import { Observable, map } from "rxjs";
 import { ApiBaseService } from "./api-base.service";
 import { normalizeReservacion } from "./api-normalizers";
 import { ApiReservacion } from "../models/api.models";
@@ -13,9 +13,23 @@ export class ReservacionesApiService {
     private readonly apiBase: ApiBaseService,
   ) {}
 
-  list(): Promise<Reservacion[]> {
-    return firstValueFrom(this.http.get<ApiReservacion[]>(this.apiBase.api("reservaciones"))).then((items) =>
-      items.map(normalizeReservacion),
-    );
+  list(): Observable<Reservacion[]> {
+    return this.http.get<ApiReservacion[]>(this.apiBase.api("reservaciones")).pipe(map((items) => items.map(normalizeReservacion)));
+  }
+
+  get(id: string): Observable<Reservacion> {
+    return this.http.get<ApiReservacion>(this.apiBase.api(`reservaciones/${id}`)).pipe(map(normalizeReservacion));
+  }
+
+  create(payload: Omit<Reservacion, "id">): Observable<Reservacion> {
+    return this.http.post<ApiReservacion>(this.apiBase.api("reservaciones"), payload).pipe(map(normalizeReservacion));
+  }
+
+  update(payload: Reservacion): Observable<void> {
+    return this.http.put<void>(this.apiBase.api(`reservaciones/${payload.id}`), payload);
+  }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(this.apiBase.api(`reservaciones/${id}`));
   }
 }

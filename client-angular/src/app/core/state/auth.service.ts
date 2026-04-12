@@ -1,8 +1,10 @@
 import { Injectable, signal } from "@angular/core";
 import { AuthResponse } from "../models/auth.models";
 import { AuthApiService } from "../api/auth-api.service";
+import { EMPTY, Observable, finalize, tap, catchError } from "rxjs";
 
 const STORAGE_KEY = "disenoweb-session";
+const ADMIN_ROLE_ID = "11111111-1111-1111-1111-111111111111";
 
 @Injectable({ providedIn: "root" })
 export class AuthService {
@@ -21,39 +23,43 @@ export class AuthService {
     }
   }
 
-  async login(email: string, password: string): Promise<void> {
+  login(email: string, password: string): Observable<AuthResponse> {
     this.loading.set(true);
     this.error.set(null);
-    try {
-      const res = await this.authApi.login(email, password);
-      if (!res.accedido) {
-        throw new Error(res.message);
-      }
-      this.user.set(res);
-      this.persistSession();
-    } catch (err: unknown) {
-      this.user.set(null);
-      localStorage.removeItem(STORAGE_KEY);
-      this.error.set(this.extractError(err, "No pudimos iniciar sesión"));
-    } finally {
-      this.loading.set(false);
-    }
+    return this.authApi.login(email, password).pipe(
+      tap((res) => {
+        if (!res.accedido) {
+          throw new Error(res.message);
+        }
+        this.user.set(res);
+        this.persistSession();
+      }),
+      catchError((err: unknown) => {
+        this.user.set(null);
+        localStorage.removeItem(STORAGE_KEY);
+        this.error.set(this.extractError(err, "No pudimos iniciar sesión"));
+        return EMPTY;
+      }),
+      finalize(() => this.loading.set(false)),
+    );
   }
 
-  async register(name: string, email: string, password: string): Promise<void> {
+  register(name: string, email: string, password: string): Observable<AuthResponse> {
     this.loading.set(true);
     this.error.set(null);
-    try {
-      const res = await this.authApi.register(name, email, password);
-      this.user.set(res);
-      this.persistSession();
-    } catch (err: unknown) {
-      this.user.set(null);
-      localStorage.removeItem(STORAGE_KEY);
-      this.error.set(this.extractError(err, "No pudimos registrar"));
-    } finally {
-      this.loading.set(false);
-    }
+    return this.authApi.register(name, email, password).pipe(
+      tap((res) => {
+        this.user.set(res);
+        this.persistSession();
+      }),
+      catchError((err: unknown) => {
+        this.user.set(null);
+        localStorage.removeItem(STORAGE_KEY);
+        this.error.set(this.extractError(err, "No pudimos registrar"));
+        return EMPTY;
+      }),
+      finalize(() => this.loading.set(false)),
+    );
   }
 
   logout(): void {
@@ -61,30 +67,37 @@ export class AuthService {
     localStorage.removeItem(STORAGE_KEY);
   }
 
-  async updateProfile(updates: { name?: string; email?: string; passwordHash?: string }): Promise<void> {
+  isAdmin(): boolean {
+    return this.user()?.roleId === ADMIN_ROLE_ID;
+  }
+
+  updateProfile(updates: { name?: string; email?: string; passwordHash?: string }): Observable<void> {
     const current = this.user();
-    if (!current) return;
+    if (!current) return EMPTY;
 
     this.loading.set(true);
     this.error.set(null);
 
-    try {
-      const payload = {
-        id: current.userId,
-        name: updates.name ?? current.name,
-        email: updates.email ?? current.email,
-        passwordHash: updates.passwordHash ?? current.passwordHash ?? "",
-        roleId: current.roleId,
-        createdAt: current.createdAt,
-      };
-      await this.authApi.updateProfile(payload);
-      this.user.set({ ...current, name: payload.name, email: payload.email, passwordHash: payload.passwordHash });
-      this.persistSession();
-    } catch (err: unknown) {
-      this.error.set(this.extractError(err, "No pudimos actualizar el perfil"));
-    } finally {
-      this.loading.set(false);
-    }
+    const payload = {
+      id: current.userId,
+      name: updates.name ?? current.name,
+      email: updates.email ?? current.email,
+      passwordHash: updates.passwordHash ?? current.passwordHash ?? "",
+      roleId: current.roleId,
+      createdAt: current.createdAt,
+    };
+
+    return this.authApi.updateProfile(payload).pipe(
+      tap(() => {
+        this.user.set({ ...current, name: payload.name, email: payload.email, passwordHash: payload.passwordHash });
+        this.persistSession();
+      }),
+      catchError((err: unknown) => {
+        this.error.set(this.extractError(err, "No pudimos actualizar el perfil"));
+        return EMPTY;
+      }),
+      finalize(() => this.loading.set(false)),
+    );
   }
 
   private extractError(err: unknown, fallback: string): string {

@@ -20,7 +20,9 @@ builder.Services.AddCors(options =>
                   "http://localhost:5173",
                   "https://localhost:5173",
                   "http://localhost:3000",
-                  "https://localhost:3000")
+                  "https://localhost:3000",
+                  "http://localhost:4200",
+                  "https://localhost:4200")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -48,7 +50,11 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+var httpsPort = builder.Configuration["ASPNETCORE_HTTPS_PORT"] ?? builder.Configuration["HTTPS_PORT"];
+if (!string.IsNullOrWhiteSpace(httpsPort))
+{
+    app.UseHttpsRedirection();
+}
 app.UseStaticFiles();
 app.UseCors("AllowFrontend");
 app.UseAuthorization();

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
+import { finalize } from "rxjs";
 import { Comentario } from "../../../core/models/domain.models";
 import { ComentariosApiService } from "../../../core/api/comentarios-api.service";
 
@@ -40,27 +41,30 @@ export class QuickCommentComponent {
 
   constructor(private readonly comentariosApi: ComentariosApiService) {}
 
-  async handleSubmit(event: Event): Promise<void> {
+  handleSubmit(event: Event): void {
     event.preventDefault();
     if (!this.texto.trim()) return;
 
     this.loading = true;
     this.error = null;
+    const payload: Omit<Comentario, "id" | "fecha"> = {
+      texto: this.texto,
+      usuarioId: this.usuarioId,
+      sitioId: this.sitioId ?? null,
+      hotelId: this.hotelId ?? null,
+    };
 
-    try {
-      const payload: Omit<Comentario, "id" | "fecha"> = {
-        texto: this.texto,
-        usuarioId: this.usuarioId,
-        sitioId: this.sitioId ?? null,
-        hotelId: this.hotelId ?? null,
-      };
-      const created = await this.comentariosApi.create(payload);
-      this.created.emit(created);
-      this.texto = "";
-    } catch (err: unknown) {
-      this.error = err instanceof Error ? err.message : "No se pudo publicar el comentario";
-    } finally {
-      this.loading = false;
-    }
+    this.comentariosApi
+      .create(payload)
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: (created) => {
+          this.created.emit(created);
+          this.texto = "";
+        },
+        error: (err: unknown) => {
+          this.error = err instanceof Error ? err.message : "No se pudo publicar el comentario";
+        },
+      });
   }
 }

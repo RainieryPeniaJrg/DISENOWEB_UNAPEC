@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { firstValueFrom } from "rxjs";
+import { Observable, map } from "rxjs";
 import { ApiBaseService } from "./api-base.service";
 import { normalizePago } from "./api-normalizers";
 import { ApiPago } from "../models/api.models";
@@ -13,7 +13,23 @@ export class PagosApiService {
     private readonly apiBase: ApiBaseService,
   ) {}
 
-  list(): Promise<Pago[]> {
-    return firstValueFrom(this.http.get<ApiPago[]>(this.apiBase.api("pagos"))).then((items) => items.map(normalizePago));
+  list(): Observable<Pago[]> {
+    return this.http.get<ApiPago[]>(this.apiBase.api("pagos")).pipe(map((items) => items.map(normalizePago)));
+  }
+
+  get(id: string): Observable<Pago> {
+    return this.http.get<ApiPago>(this.apiBase.api(`pagos/${id}`)).pipe(map(normalizePago));
+  }
+
+  create(payload: Omit<Pago, "id">): Observable<Pago> {
+    return this.http.post<ApiPago>(this.apiBase.api("pagos"), payload).pipe(map(normalizePago));
+  }
+
+  update(payload: Pago): Observable<void> {
+    return this.http.put<void>(this.apiBase.api(`pagos/${payload.id}`), payload);
+  }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(this.apiBase.api(`pagos/${id}`));
   }
 }

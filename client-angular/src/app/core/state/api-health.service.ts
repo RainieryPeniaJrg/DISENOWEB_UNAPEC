@@ -1,6 +1,6 @@
 import { Injectable, signal } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { firstValueFrom } from "rxjs";
+import { EMPTY, finalize, tap, catchError } from "rxjs";
 import { environment } from "../../../environments/environment";
 
 export type ApiHealthStatus = "checking" | "online" | "offline";
@@ -11,18 +11,21 @@ export class ApiHealthService {
   readonly lastCheckedAt = signal<string | null>(null);
 
   constructor(private readonly http: HttpClient) {
-    void this.refresh();
+    this.refresh();
   }
 
-  async refresh(): Promise<void> {
+  refresh(): void {
     this.status.set("checking");
-    try {
-      await firstValueFrom(this.http.get(environment.apiBaseUrl, { responseType: "json" }));
-      this.status.set("online");
-    } catch {
-      this.status.set("offline");
-    } finally {
-      this.lastCheckedAt.set(new Date().toISOString());
-    }
+    this.http
+      .get(environment.apiBaseUrl, { responseType: "json" })
+      .pipe(
+        tap(() => this.status.set("online")),
+        catchError(() => {
+          this.status.set("offline");
+          return EMPTY;
+        }),
+        finalize(() => this.lastCheckedAt.set(new Date().toISOString())),
+      )
+      .subscribe();
   }
 }

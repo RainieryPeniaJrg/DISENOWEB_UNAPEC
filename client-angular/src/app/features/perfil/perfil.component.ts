@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
+import { finalize, forkJoin } from "rxjs";
 import { ReservacionesApiService } from "../../core/api/reservaciones-api.service";
 import { UsuariosApiService } from "../../core/api/usuarios-api.service";
 import { AuthService } from "../../core/state/auth.service";
@@ -159,37 +160,47 @@ export class PerfilComponent implements OnInit {
     return this.reservas.reduce((sum, item) => sum + item.total, 0);
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     const user = this.auth.user();
     if (!user) {
       this.loading = false;
       return;
     }
 
-    try {
-      const [perfil, reservas] = await Promise.all([this.usuariosApi.get(user.userId), this.reservacionesApi.list()]);
-      this.perfil = perfil;
-      this.form = { ...perfil.usuario };
-      this.reservas = reservas.filter((item) => item.usuarioId === user.userId);
-    } catch (err) {
-      console.error(err);
-      this.error = "No se pudo sincronizar tu información desde la API.";
-    } finally {
-      this.loading = false;
-    }
+    forkJoin({
+      perfil: this.usuariosApi.get(user.userId),
+      reservas: this.reservacionesApi.list(),
+    })
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: ({ perfil, reservas }) => {
+          this.perfil = perfil;
+          this.form = { ...perfil.usuario };
+          this.reservas = reservas.filter((item) => item.usuarioId === user.userId);
+        },
+        error: (err) => {
+          console.error(err);
+          this.error = "No se pudo sincronizar tu información desde la API.";
+        },
+      });
   }
 
-  async handleSave(): Promise<void> {
+  handleSave(): void {
     if (!this.form) return;
     this.status = null;
-    await this.auth.updateProfile({
-      name: this.form.name,
-      email: this.form.email,
-      passwordHash: this.form.passwordHash,
-    });
-    if (!this.auth.error()) {
-      this.status = "Datos actualizados correctamente.";
-    }
+    this.auth
+      .updateProfile({
+        name: this.form.name,
+        email: this.form.email,
+        passwordHash: this.form.passwordHash,
+      })
+      .subscribe({
+        next: () => {
+          if (!this.auth.error()) {
+            this.status = "Datos actualizados correctamente.";
+          }
+        },
+      });
   }
 
   currency(value: number): string {

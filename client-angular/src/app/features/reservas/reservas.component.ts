@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { finalize } from "rxjs";
 import { ReservacionesApiService } from "../../core/api/reservaciones-api.service";
 import { AuthService } from "../../core/state/auth.service";
 import { Reservacion } from "../../core/models/domain.models";
@@ -14,12 +15,12 @@ import { EmptyStateComponent } from "../../shared/components/empty-state/empty-s
     <div class="page">
       <app-hero
         eyebrow="Reservas"
-        title="Vista conectada al API para la siguiente fase funcional."
-        description="En esta etapa la pantalla ya consume reservaciones reales y las filtra por sesión cuando aplica."
-        [chips]="['Solo lectura', 'API conectada', 'Lista para evolución']"
+        title="Reservaciones conectadas al API y sincronizadas con la gestión."
+        description="La pantalla consume reservaciones reales, filtra por sesión y refleja cambios hechos desde el panel administrativo."
+        [chips]="['API conectada', 'Filtrado por sesión', 'Gestión sincronizada']"
         [metrics]="heroMetrics"
         noteTitle="Estado de la funcionalidad"
-        [noteItems]="['La UX final de creación y edición se deja para la siguiente iteración.', 'La capa de datos ya está alineada con el backend actual.']"
+        [noteItems]="['La administración completa vive en el panel admin.', 'Aquí se mantiene la lectura enfocada en la experiencia del usuario.']"
       />
 
       <app-empty-state
@@ -75,15 +76,19 @@ export class ReservasComponent implements OnInit {
     ];
   }
 
-  async ngOnInit(): Promise<void> {
-    try {
-      this.reservas = await this.reservacionesApi.list();
-    } catch (err) {
-      console.error(err);
-      this.error = "No se pudo consultar el endpoint de reservaciones.";
-    } finally {
-      this.loading = false;
-    }
+  ngOnInit(): void {
+    this.reservacionesApi
+      .list()
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: (reservas) => {
+          this.reservas = reservas;
+        },
+        error: (err) => {
+          console.error(err);
+          this.error = "No se pudo consultar el endpoint de reservaciones.";
+        },
+      });
   }
 
   currency(value: number): string {

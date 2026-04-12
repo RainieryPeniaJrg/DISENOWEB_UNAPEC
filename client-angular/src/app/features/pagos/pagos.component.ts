@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { finalize, forkJoin } from "rxjs";
 import { PagosApiService } from "../../core/api/pagos-api.service";
 import { ReservacionesApiService } from "../../core/api/reservaciones-api.service";
 import { AuthService } from "../../core/state/auth.service";
@@ -15,12 +16,12 @@ import { EmptyStateComponent } from "../../shared/components/empty-state/empty-s
     <div class="page">
       <app-hero
         eyebrow="Pagos"
-        title="Historial de pagos conectado y listo para crecer."
-        description="La vista consume pagos reales y los cruza con reservaciones para mostrar la actividad relevante del usuario."
-        [chips]="['Backend real', 'Cruce con reservaciones', 'Siguiente fase UX']"
+        title="Pagos conectados al API y sincronizados con reservaciones."
+        description="La vista consume pagos reales, los cruza con reservaciones y refleja la gestión operativa desde el panel administrativo."
+        [chips]="['Backend real', 'Cruce con reservaciones', 'Gestión sincronizada']"
         [metrics]="heroMetrics"
         noteTitle="Estado actual"
-        [noteItems]="['Se muestra historial y estados.', 'La siguiente fase podrá agregar acciones transaccionales seguras.']"
+        [noteItems]="['Se muestra historial y estados reales.', 'Las operaciones CRUD se concentran en el panel admin.']"
       />
 
       <app-empty-state
@@ -81,17 +82,22 @@ export class PagosComponent implements OnInit {
     ];
   }
 
-  async ngOnInit(): Promise<void> {
-    try {
-      const [pagos, reservaciones] = await Promise.all([this.pagosApi.list(), this.reservacionesApi.list()]);
-      this.pagos = pagos;
-      this.reservaciones = reservaciones;
-    } catch (err) {
-      console.error(err);
-      this.error = "No se pudo consultar el endpoint de pagos.";
-    } finally {
-      this.loading = false;
-    }
+  ngOnInit(): void {
+    forkJoin({
+      pagos: this.pagosApi.list(),
+      reservaciones: this.reservacionesApi.list(),
+    })
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: ({ pagos, reservaciones }) => {
+          this.pagos = pagos;
+          this.reservaciones = reservaciones;
+        },
+        error: (err) => {
+          console.error(err);
+          this.error = "No se pudo consultar el endpoint de pagos.";
+        },
+      });
   }
 
   currency(value: number): string {

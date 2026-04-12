@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { firstValueFrom } from "rxjs";
+import { Observable, map } from "rxjs";
 import { ApiBaseService } from "./api-base.service";
 import { normalizeValoracion, normalizeValoracionStats } from "./api-normalizers";
 import { ApiValoracion, ApiValoracionStats } from "../models/api.models";
@@ -13,27 +13,39 @@ export class ValoracionesApiService {
     private readonly apiBase: ApiBaseService,
   ) {}
 
-  listBySitio(sitioId: string): Promise<Valoracion[]> {
-    return firstValueFrom(this.http.get<ApiValoracion[]>(this.apiBase.api(`valoraciones/sitio/${sitioId}`))).then((items) =>
-      items.map(normalizeValoracion),
-    );
+  list(): Observable<Valoracion[]> {
+    return this.http.get<ApiValoracion[]>(this.apiBase.api("valoraciones")).pipe(map((items) => items.map(normalizeValoracion)));
   }
 
-  listByHotel(hotelId: string): Promise<Valoracion[]> {
-    return firstValueFrom(this.http.get<ApiValoracion[]>(this.apiBase.api(`valoraciones/hotel/${hotelId}`))).then((items) =>
-      items.map(normalizeValoracion),
-    );
+  get(id: string): Observable<Valoracion> {
+    return this.http.get<ApiValoracion>(this.apiBase.api(`valoraciones/${id}`)).pipe(map(normalizeValoracion));
   }
 
-  statsSitio(sitioId: string): Promise<ValoracionStats> {
-    return firstValueFrom(
-      this.http.get<ApiValoracionStats>(this.apiBase.api(`valoraciones/sitio/${sitioId}/estadisticas`)),
-    ).then(normalizeValoracionStats);
+  listBySitio(sitioId: string): Observable<Valoracion[]> {
+    return this.http.get<ApiValoracion[]>(this.apiBase.api(`valoraciones/sitio/${sitioId}`)).pipe(map((items) => items.map(normalizeValoracion)));
   }
 
-  statsHotel(hotelId: string): Promise<ValoracionStats> {
-    return firstValueFrom(
-      this.http.get<ApiValoracionStats>(this.apiBase.api(`valoraciones/hotel/${hotelId}/estadisticas`)),
-    ).then(normalizeValoracionStats);
+  listByHotel(hotelId: string): Observable<Valoracion[]> {
+    return this.http.get<ApiValoracion[]>(this.apiBase.api(`valoraciones/hotel/${hotelId}`)).pipe(map((items) => items.map(normalizeValoracion)));
+  }
+
+  statsSitio(sitioId: string): Observable<ValoracionStats> {
+    return this.http.get<ApiValoracionStats>(this.apiBase.api(`valoraciones/sitio/${sitioId}/estadisticas`)).pipe(map(normalizeValoracionStats));
+  }
+
+  statsHotel(hotelId: string): Observable<ValoracionStats> {
+    return this.http.get<ApiValoracionStats>(this.apiBase.api(`valoraciones/hotel/${hotelId}/estadisticas`)).pipe(map(normalizeValoracionStats));
+  }
+
+  create(payload: Omit<Valoracion, "id">): Observable<Valoracion> {
+    return this.http.post<ApiValoracion>(this.apiBase.api("valoraciones"), payload).pipe(map(normalizeValoracion));
+  }
+
+  update(payload: Valoracion): Observable<void> {
+    return this.http.put<void>(this.apiBase.api(`valoraciones/${payload.id}`), payload);
+  }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(this.apiBase.api(`valoraciones/${id}`));
   }
 }
