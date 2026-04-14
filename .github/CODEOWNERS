@@ -1,8 +1,0 @@
-# CODEOWNERS
-# Ajusta los handles del equipo
-* @your-org/owners
-
-# Opcional: áreas
-/server/ @your-org/backend
-/client/ @your-org/frontend
-/.github/ @your-org/devops

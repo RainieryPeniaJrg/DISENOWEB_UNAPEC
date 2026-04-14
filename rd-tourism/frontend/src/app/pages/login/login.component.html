@@ -1,0 +1,41 @@
+<div class="login-page">
+  <div class="login-bg"></div>
+  <div class="login-card">
+    <div class="login-header">
+      <div class="logo">🌴</div>
+      <h1>RD Tourism</h1>
+      <p>{{ isRegister ? 'Crea tu cuenta' : 'Bienvenido de vuelta' }}</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div *ngIf="isRegister" class="field">
+        <label>Nombre completo</label>
+        <input type="text" formControlName="name" placeholder="Tu nombre" />
+      </div>
+      <div class="field">
+        <label>Correo electrónico</label>
+        <input type="email" formControlName="email" placeholder="correo@ejemplo.com" />
+      </div>
+      <div class="field">
+        <label>Contraseña</label>
+        <input type="password" formControlName="password" placeholder="••••••••" />
+      </div>
+
+      <div *ngIf="error" class="error-msg">{{ error }}</div>
+
+      <button type="submit" class="btn-primary" [disabled]="loading || form.invalid">
+        <span *ngIf="!loading">{{ isRegister ? 'Registrarse' : 'Iniciar Sesión' }}</span>
+        <span *ngIf="loading" class="spinner"></span>
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <span *ngIf="!isRegister">¿No tienes cuenta? <a (click)="toggleMode()">Regístrate</a></span>
+      <span *ngIf="isRegister">¿Ya tienes cuenta? <a (click)="toggleMode()">Inicia sesión</a></span>
+    </div>
+
+    <div class="demo-hint">
+      <small>Demo: demo&#64;rdturismo.com / Demo123!</small>
+    </div>
+  </div>
+</div>

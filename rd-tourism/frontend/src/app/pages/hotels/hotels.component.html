@@ -1,0 +1,70 @@
+<div class="page">
+  <div class="page-hero">
+    <h1>🏨 Hoteles en República Dominicana</h1>
+    <p>Descubre los mejores alojamientos del Caribe</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar" [formGroup]="filterForm">
+    <select formControlName="province">
+      <option value="">Todas las provincias</option>
+      <option *ngFor="let p of provinces" [value]="p">{{ p }}</option>
+    </select>
+    <select formControlName="category">
+      <option value="">Todas las categorías</option>
+      <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+    </select>
+    <select formControlName="stars">
+      <option value="">Todas las estrellas</option>
+      <option *ngFor="let s of starOptions" [value]="s">{{ s }} estrellas</option>
+    </select>
+    <button class="btn-clear" (click)="clearFilters()">Limpiar</button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner-lg"></div>
+    <p>Buscando hoteles...</p>
+  </div>
+
+  <!-- Results -->
+  <div class="hotels-grid" *ngIf="!loading">
+    <div class="result-count">{{ hotels.length }} hotel{{ hotels.length !== 1 ? 'es' : '' }} encontrado{{ hotels.length !== 1 ? 's' : '' }}</div>
+
+    <div class="card-grid">
+      <a class="hotel-card" *ngFor="let hotel of hotels" [routerLink]="['/hotels', hotel.id]">
+        <div class="card-image">
+          <img [src]="hotel.imageUrl" [alt]="hotel.name" loading="lazy" />
+          <div class="card-badges">
+            <span class="badge badge-stars">{{ getStars(hotel.stars).join('') }}</span>
+            <span class="badge badge-inclusive" *ngIf="hotel.isAllInclusive">Todo Incluido</span>
+          </div>
+          <div class="card-price">
+            <span class="price-amount">US${{ hotel.pricePerNight }}</span>
+            <span class="price-night">/noche</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-category">{{ hotel.category }}</div>
+          <h3>{{ hotel.name }}</h3>
+          <div class="card-location">📍 {{ hotel.location }}</div>
+          <div class="card-rating">
+            <span class="rating-star">⭐</span>
+            <strong>{{ hotel.rating }}</strong>
+            <span class="rating-label">/ 5.0</span>
+          </div>
+          <div class="card-amenities">
+            <span class="amenity" *ngFor="let a of hotel.amenities.slice(0,4)">{{ a }}</span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="empty-state" *ngIf="hotels.length === 0">
+      <div class="empty-icon">🏨</div>
+      <h3>Sin resultados</h3>
+      <p>Intenta con otros filtros</p>
+      <button class="btn-primary" (click)="clearFilters()">Ver todos los hoteles</button>
+    </div>
+  </div>
+</div>

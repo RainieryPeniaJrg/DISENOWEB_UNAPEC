@@ -1,0 +1,134 @@
+<div class="page" *ngIf="!loading && hotel">
+  <!-- Back -->
+  <div class="back-bar">
+    <a routerLink="/hotels" class="back-btn">← Volver a Hoteles</a>
+  </div>
+
+  <!-- Hero -->
+  <div class="detail-hero">
+    <img [src]="hotel.imageUrl" [alt]="hotel.name" />
+    <div class="hero-overlay">
+      <div class="hero-content">
+        <div class="hero-badges">
+          <span class="badge-stars">{{ getStars(hotel.stars).join('') }}</span>
+          <span class="badge-cat">{{ hotel.category }}</span>
+          <span class="badge-inclusive" *ngIf="hotel.isAllInclusive">Todo Incluido</span>
+        </div>
+        <h1>{{ hotel.name }}</h1>
+        <div class="hero-meta">
+          <span>📍 {{ hotel.location }}, {{ hotel.province }}</span>
+          <span class="rating">⭐ {{ hotel.rating }} / 5.0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-body">
+    <!-- Info Column -->
+    <div class="detail-info">
+      <section class="info-section">
+        <h2>Descripción</h2>
+        <p>{{ hotel.description }}</p>
+      </section>
+
+      <section class="info-section">
+        <h2>Amenidades</h2>
+        <div class="amenities-grid">
+          <div class="amenity-item" *ngFor="let a of hotel.amenities">✓ {{ a }}</div>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <h2>Contacto</h2>
+        <div class="contact-info">
+          <div>📞 {{ hotel.phone }}</div>
+          <div><a [href]="hotel.website" target="_blank">🌐 Sitio web oficial</a></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Reservation Panel -->
+    <div class="reservation-panel">
+      <!-- Confirmation -->
+      <div class="confirmation-card" *ngIf="confirmation">
+        <div class="confirm-icon">✅</div>
+        <h3>¡Reserva Confirmada!</h3>
+        <div class="confirm-code">{{ confirmation.confirmationCode }}</div>
+        <div class="confirm-details">
+          <div><strong>Hotel:</strong> {{ confirmation.hotel.name }}</div>
+          <div><strong>Check-in:</strong> {{ confirmation.checkIn | date:'dd/MM/yyyy' }}</div>
+          <div><strong>Check-out:</strong> {{ confirmation.checkOut | date:'dd/MM/yyyy' }}</div>
+          <div><strong>Noches:</strong> {{ confirmation.nights }}</div>
+          <div><strong>Total:</strong> US$ {{ confirmation.totalPrice | number:'1.2-2' }}</div>
+          <div><strong>Estado:</strong> <span class="status-confirmed">{{ confirmation.status }}</span></div>
+        </div>
+        <button class="btn-secondary" (click)="confirmation = null">Nueva Reserva</button>
+      </div>
+
+      <!-- Form -->
+      <form class="reserve-form" [formGroup]="reservationForm" (ngSubmit)="reserve()" *ngIf="!confirmation">
+        <div class="form-header">
+          <div class="price-display">
+            <span class="price-big">US$ {{ hotel.pricePerNight }}</span>
+            <span class="price-label">/ noche</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Nombre del Huésped</label>
+          <input type="text" formControlName="guestName" placeholder="Tu nombre completo" />
+        </div>
+        <div class="form-group">
+          <label>Correo Electrónico</label>
+          <input type="email" formControlName="guestEmail" placeholder="correo@ejemplo.com" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Check-in</label>
+            <input type="date" formControlName="checkIn" />
+          </div>
+          <div class="form-group">
+            <label>Check-out</label>
+            <input type="date" formControlName="checkOut" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Huéspedes</label>
+            <input type="number" formControlName="guests" min="1" max="10" />
+          </div>
+          <div class="form-group">
+            <label>Tipo de Habitación</label>
+            <select formControlName="roomType">
+              <option *ngFor="let r of roomTypes" [value]="r">{{ r }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="price-summary" *ngIf="nights > 0">
+          <div class="price-row">
+            <span>US$ {{ hotel.pricePerNight }} × {{ nights }} noche{{ nights !== 1 ? 's' : '' }}</span>
+            <strong>US$ {{ totalPrice | number:'1.2-2' }}</strong>
+          </div>
+          <div class="price-row total">
+            <span>Total estimado</span>
+            <strong>US$ {{ totalPrice | number:'1.2-2' }}</strong>
+          </div>
+        </div>
+
+        <div class="error-msg" *ngIf="error">{{ error }}</div>
+
+        <button type="submit" class="btn-reserve" [disabled]="reservationForm.invalid || reserving || nights <= 0">
+          <span *ngIf="!reserving">🏨 Solicitar Reserva</span>
+          <span *ngIf="reserving">Procesando...</span>
+        </button>
+        <p class="reserve-note">* Sin cobro hasta la llegada. Reserva sujeta a disponibilidad.</p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="loading-state" *ngIf="loading">
+  <div class="spinner-lg"></div>
+  <p>Cargando hotel...</p>
+</div>

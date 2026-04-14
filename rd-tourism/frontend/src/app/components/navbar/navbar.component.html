@@ -1,0 +1,27 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <a class="nav-brand" routerLink="/hotels">
+      <span class="brand-icon">🌴</span>
+      <span class="brand-text">RD <strong>Tourism</strong></span>
+    </a>
+
+    <button class="hamburger" (click)="toggleMenu()" [class.open]="menuOpen">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="nav-links" [class.open]="menuOpen">
+      <a routerLink="/hotels" routerLinkActive="active" (click)="menuOpen=false">
+        🏨 Hoteles
+      </a>
+      <a routerLink="/sites" routerLinkActive="active" (click)="menuOpen=false">
+        🗺️ Sitios Turísticos
+      </a>
+    </div>
+
+    <div class="nav-user" *ngIf="user">
+      <div class="user-avatar">{{ user.name.charAt(0).toUpperCase() }}</div>
+      <span class="user-name">{{ user.name }}</span>
+      <button class="btn-logout" (click)="logout()">Salir</button>
+    </div>
+  </div>
+</nav>

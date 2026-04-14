@@ -1,0 +1,61 @@
+<div class="page">
+  <div class="page-hero sites-hero">
+    <h1>🗺️ Sitios Turísticos de RD</h1>
+    <p>Explora las maravillas naturales, playas y cultura dominicana</p>
+  </div>
+
+  <!-- Category Pills -->
+  <div class="category-bar">
+    <button class="cat-pill" [class.active]="filterForm.get('category')?.value === ''"
+      (click)="filterForm.get('category')?.setValue('')">Todos</button>
+    <button class="cat-pill" *ngFor="let c of categories"
+      [class.active]="filterForm.get('category')?.value === c"
+      (click)="filterForm.get('category')?.setValue(c)">
+      {{ getCategoryIcon(c) }} {{ c }}
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner-lg"></div>
+    <p>Cargando sitios turísticos...</p>
+  </div>
+
+  <!-- Grid -->
+  <div class="sites-container" *ngIf="!loading">
+    <div class="result-count">{{ sites.length }} sitio{{ sites.length !== 1 ? 's' : '' }} encontrado{{ sites.length !== 1 ? 's' : '' }}</div>
+
+    <div class="sites-grid">
+      <div class="site-card" *ngFor="let site of sites">
+        <div class="site-image">
+          <img [src]="site.imageUrl" [alt]="site.name" loading="lazy" />
+          <div class="site-category-badge">{{ getCategoryIcon(site.category) }} {{ site.category }}</div>
+          <div class="site-free-badge" [class.paid]="!site.isFree">
+            {{ site.isFree ? 'Gratuito' : 'US$ ' + site.entryFee }}
+          </div>
+        </div>
+        <div class="site-body">
+          <div class="site-rating">
+            <span>⭐ {{ site.rating }}</span>
+            <span class="site-location">📍 {{ site.province }}</span>
+          </div>
+          <h3>{{ site.name }}</h3>
+          <p class="site-desc">{{ site.description }}</p>
+          <div class="site-activities">
+            <span class="activity-tag" *ngFor="let a of site.activities.slice(0, 3)">{{ a }}</span>
+          </div>
+          <div class="site-footer">
+            <span class="best-time">🗓️ Mejor época: {{ site.bestTimeToVisit }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="sites.length === 0">
+      <div class="empty-icon">🗺️</div>
+      <h3>Sin resultados</h3>
+      <p>Prueba con otra categoría</p>
+      <button class="btn-primary" (click)="clearFilters()">Ver todos</button>
+    </div>
+  </div>
+</div>
